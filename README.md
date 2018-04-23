@@ -34,9 +34,9 @@ Drag and Drop
 Channels
 --------
 
-* Scan channels manually
-* Scan [initial file](https://www.linuxtv.org/downloads/dtv-scan-tables)
-* Convert - dvb_channel.conf ( [dvbv5-scan {OPTION...} --output-format=DVBV5 initial file](https://www.linuxtv.org/downloads/v4l-utils) )
+* scan channels manually
+* scan [initial file](https://www.linuxtv.org/downloads/dtv-scan-tables)
+* convert - dvb_channel.conf ( [dvbv5-scan {OPTION...} --output-format=DVBV5 initial file](https://www.linuxtv.org/downloads/v4l-utils) )
 
 
 Design
