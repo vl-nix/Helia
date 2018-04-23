@@ -15,6 +15,15 @@ Requirements
 * [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
 
 
+Digital TV
+----------
+![alt text](https://static.wixstatic.com/media/650ea5_f6aa02cf376f40588bcca961f6c3ec45~mv2.png)
+
+Media Player
+------------
+![alt text](https://static.wixstatic.com/media/650ea5_ecca24dc614349d18c89f0c3a0e72c01~mv2.png)
+
+
 Depends
 -------
 
