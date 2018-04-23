@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/helia">
+	<file preprocess="to-pixdata">res/icons/gmp-about.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-clear.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-display.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-down.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-down-select.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-editor.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-eqav.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-exit.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-media-pause.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-media-record.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-media-start.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-media-stop.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-mp.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-muted.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-pref.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-remove.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-save.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-shutdown.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-slider.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-tv.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-up.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-up-select.png</file>  
+	<file preprocess="to-pixdata">res/icons/gmp-theme.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-icons.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-folder-rec.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-ok.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-convert.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-panel.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-set.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-unset.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-next.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-prev.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-warning.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-satelite.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-resize.png</file>
+	<file preprocess="to-pixdata">res/icons/gmp-helia.png</file>
+  </gresource>
+</gresources>
