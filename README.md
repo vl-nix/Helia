@@ -24,15 +24,6 @@ Media Player
 ![alt text](https://static.wixstatic.com/media/650ea5_ecca24dc614349d18c89f0c3a0e72c01~mv2.png)
 
 
-Makefile
---------
-
-* make [target]:
-  * help
-  * info
-  * ...
-
-
 Drag and Drop
 -------------
 * folders
@@ -53,6 +44,16 @@ Design
 
 * Dark Theme
 
+
+Makefile
+--------
+
+* make [target]:
+  * help
+  * info
+  * ...
+  
+  
 Depends
 -------
 
