@@ -65,13 +65,3 @@ Depends
 * gst-plugins 1.0 ( & dev )
   * base, good, ugly, bad ( & dev )
 * gst-libav
-
-DEB
-* libgtk-3-0 gstreamer1.0-x
-* gstreamer1.0-plugins-base gstreamer1.0-plugins-good
-* gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav
-
-RPM
-* libgtk+3 gstreamer1.0
-* gst-plugins-base1.0 gst-plugins-good1.0
-* gst-plugins-bad1.0 gst-plugins-ugly1.0 gst-libav
