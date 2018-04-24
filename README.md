@@ -42,7 +42,7 @@ Channels
 Design
 ------
 
-* Dark Theme
+* Dark Theme ( recommended )
 
 
 Makefile
