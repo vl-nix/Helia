@@ -3,17 +3,6 @@
 # Makefile for Helia
 # https://github.com/vl-nix/helia
 #
-# Depends
-# -------
-# gcc
-# make
-# gettext
-# libgtk 3	  ( & dev )
-# gstreamer 1.0	  ( & dev )
-# gst-plugins 1.0 ( & dev )
-# 	base, good, ugly, bad
-# gst-libav
-#
 #===========================================================================
 #
 # Set prefix = PREFIX ( install files in PREFIX )
@@ -47,6 +36,7 @@ objs  = $(srcs:.c=.o)
 
 all: genres build
 
+
 compile: $(objs)
 
 build: $(objs)
@@ -58,7 +48,6 @@ build: $(objs)
 	@echo 'compile: ' $@
 	@gcc -Wall -Wextra -c $< -o $@ $(CFLAG) $(cflags_libs)
 
-
 genres: $(gres)
 
 %.c: %.xml
@@ -66,7 +55,6 @@ genres: $(gres)
 	@echo 'gresource: ' $@
 	@glib-compile-resources $< --target=$@ --generate-source
 	@echo
-
 
 
 install:
@@ -80,6 +68,7 @@ uninstall:
 
 clean:
 	rm -f $(program) src/*.o res/*.o res/*.c po/$(program).pot po/*.po~
+
 
 # Show variables.
 info:
