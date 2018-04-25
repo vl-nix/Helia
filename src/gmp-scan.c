@@ -1206,7 +1206,7 @@ static void gmp_scan_check_info_win ( const gchar *initial_file, GtkWindow *wind
     gtk_window_set_transient_for ( window, window_parent );
     gtk_window_set_modal     ( window, TRUE );
     gtk_window_set_position  ( window, GTK_WIN_POS_CENTER_ON_PARENT );
-    gtk_window_set_title     ( window, "Initial file" );
+    gtk_window_set_title     ( window, _("Initial file") );
 
 	gtk_window_set_type_hint ( GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_UTILITY );
 
