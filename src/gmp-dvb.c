@@ -51,7 +51,8 @@ static void gmp_about_win ( GtkWindow *window, GdkPixbuf *logo )
     if ( logo != NULL )
     {	
         gtk_about_dialog_set_logo ( dialog, logo );
-    }else
+    }
+	else
         gtk_about_dialog_set_logo_icon_name ( dialog, "applications-multimedia" );
 
     gtk_dialog_run ( GTK_DIALOG (dialog) );
