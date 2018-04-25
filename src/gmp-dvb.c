@@ -35,14 +35,15 @@ static void gmp_about_win ( GtkWindow *window, GdkPixbuf *logo )
     GtkAboutDialog *dialog = (GtkAboutDialog *)gtk_about_dialog_new ();
     gtk_window_set_transient_for ( (GtkWindow *)dialog, window );
 
-    const gchar *authors[] = { "Stepan Perun", NULL };
-
-    const gchar *license = "GNU Lesser General Public License \nwww.gnu.org/licenses/lgpl.html";
+    const gchar *authors[]   = { "Stepan Perun", " ", NULL };
+    const gchar *translators = " ";
+    const gchar *license     = "GNU Lesser General Public License \nwww.gnu.org/licenses/lgpl.html";
 
     gtk_about_dialog_set_program_name ( dialog, " Helia " );
     gtk_about_dialog_set_version ( dialog, "2.4" );
     gtk_about_dialog_set_license ( dialog, license );
     gtk_about_dialog_set_authors ( dialog, authors );
+	gtk_about_dialog_set_translator_credits ( dialog, translators );
     gtk_about_dialog_set_website ( dialog,   "https://github.com/vl-nix/helia" );
     gtk_about_dialog_set_copyright ( dialog, "Copyright 2014 - 2018 Helia  ( Gtv-Dvb )" );
     gtk_about_dialog_set_comments  ( dialog, "Media Player & IPTV & Digital TV \nDVB-T2/S2/C, ATSC, DTMB" );
