@@ -1123,7 +1123,7 @@ static void gmp_scan_read_ch_to_treeview ()
 
 static const gchar * gmp_scan_check_initial_file ( const gchar *initial_file )
 {	
-	const gchar *ret = "Undefined";
+	const gchar *ret = "Incorrect file format";
 	
 		gchar *contents;
 		GError *err = NULL;
@@ -1843,7 +1843,7 @@ static void gmp_scan_create_control_battons ( GtkBox *b_box, GtkWindow *window )
 	//GtkLabel *label = (GtkLabel *)gtk_label_new ( "Manual  /  Initial file  ( DVBv5 )" );
 	GtkLabel *label = (GtkLabel *)gtk_label_new ( 
 					  "Manual  /  Initial   <a href=\"https://www.linuxtv.org/downloads/dtv-scan-tables/dtv-scan-tables-LATEST.tar.bz2\""
-                      "title=\"Download\"><span color=\"#D60404\">file</span></a>   ( DVBv5 )" );
+                      "title=\"Download\"><span color=\"#3CB9C7\">file</span></a>   ( DVBv5 )" );
 	
 	gtk_label_set_use_markup ( GTK_LABEL (label), TRUE );	
 	gtk_box_pack_start ( b_box, GTK_WIDGET ( label ), FALSE, FALSE, 5 );
@@ -1856,7 +1856,7 @@ static void gmp_scan_create_control_battons ( GtkBox *b_box, GtkWindow *window )
 	gtk_entry_set_icon_from_icon_name ( gmpscan.entry_initial_file, GTK_ENTRY_ICON_SECONDARY, "folder" );
 	g_signal_connect ( gmpscan.entry_initial_file, "icon-press", G_CALLBACK ( gmp_scan_set_initial_file ), window );
 
-  	GtkButton *button = (GtkButton *)gtk_button_new_with_label ( "Log" );
+  	GtkButton *button = (GtkButton *)gtk_button_new_with_label ( _("Log") );
   	gtk_widget_set_sensitive ( GTK_WIDGET ( button ), FALSE );
   	g_signal_connect ( button, "clicked", G_CALLBACK ( gmp_win_log_initial_file ), window );
 
