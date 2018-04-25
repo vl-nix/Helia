@@ -391,7 +391,7 @@ void gmp_pref_win ( GtkWindow *base_window )
     gtk_window_set_transient_for ( window, gmp_base_win_ret () );
     gtk_window_set_modal     ( window, TRUE );
     gtk_window_set_position  ( window, GTK_WIN_POS_CENTER_ON_PARENT );
-    gtk_window_set_title     ( window, _("Preferences" ) );
+    gtk_window_set_title     ( window, _("Preferences") );
 	//g_signal_connect         ( window, "destroy", G_CALLBACK ( gmp_pref_quit ), NULL );
 
 	GdkPixbuf *icon = gtk_icon_theme_load_icon ( gtk_icon_theme_get_default (),
