@@ -34,8 +34,14 @@ srcs += res/helia.gresource.c
 objs  = $(srcs:.c=.o)
 
 
-all: genres build
+all: cofigure genres build
 
+cofigure:
+	@sed 's|=/.*/helia|=$(bindir)/helia|g' -i res/$(program).desktop
+	@sed 's|gtk_about_dialog_set_version ( dialog, ".*" );|gtk_about_dialog_set_version ( dialog, "$(version)" );|g' -i src/gmp-dvb.c
+	@for lang_ver in po/*.po; do \
+		sed 's|"Project-Id-Version: helia .*"|"Project-Id-Version: helia $(version)\\n"|g' -i $$lang_ver; \
+	done
 
 compile: $(objs)
 
@@ -61,7 +67,6 @@ install:
 	mkdir -p $(DESTDIR)$(bindir) $(DESTDIR)$(datadir) $(DESTDIR)$(desktopdir)
 	install -Dp -m0755 $(program) $(DESTDIR)$(bindir)/$(program)
 	install -Dp -m0644 res/$(program).desktop $(DESTDIR)$(desktopdir)/$(program).desktop
-	sed 's|bindir|$(bindir)|g' -i $(DESTDIR)$(desktopdir)/$(program).desktop
 
 uninstall:
 	rm -fr $(DESTDIR)$(bindir)/$(program) $(DESTDIR)$(desktopdir)/$(program).desktop
