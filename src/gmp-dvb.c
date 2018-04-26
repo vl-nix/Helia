@@ -37,7 +37,7 @@ static void gmp_about_win ( GtkWindow *window, GdkPixbuf *logo )
 
     const gchar *authors[]   = { "Stepan Perun", " ", NULL };
     const gchar *artists[]   = { "Itzik Gur", "Stepan Perun", " ", NULL };
-	const gchar *translators = " ";
+	const gchar *translators = " \n";
     const gchar *license     = "This program is free software. \nGNU Lesser General Public License \nwww.gnu.org/licenses/lgpl.html";
 
     gtk_about_dialog_set_program_name ( dialog, "Helia" );
