@@ -36,13 +36,15 @@ static void gmp_about_win ( GtkWindow *window, GdkPixbuf *logo )
     gtk_window_set_transient_for ( (GtkWindow *)dialog, window );
 
     const gchar *authors[]   = { "Stepan Perun", " ", NULL };
-    const gchar *translators = " ";
+    const gchar *artists[]   = { "Itzik Gur", "Stepan Perun", " ", NULL };
+	const gchar *translators = " ";
     const gchar *license     = "This program is free software. \nGNU Lesser General Public License \nwww.gnu.org/licenses/lgpl.html";
 
     gtk_about_dialog_set_program_name ( dialog, "Helia" );
     gtk_about_dialog_set_version ( dialog, "2.5" );
     gtk_about_dialog_set_license ( dialog, license );
-    gtk_about_dialog_set_authors ( dialog, authors );
+	gtk_about_dialog_set_authors ( dialog, authors );
+	gtk_about_dialog_set_artists ( dialog, artists );
 	gtk_about_dialog_set_translator_credits ( dialog, translators );
     gtk_about_dialog_set_website ( dialog,   "https://github.com/vl-nix/helia" );
     gtk_about_dialog_set_copyright ( dialog, "Copyright 2018 Helia  ( Gtv-Dvb )" );
@@ -218,7 +220,7 @@ static void gmp_base_win ( GtkApplication *app )
 
 	gmpbase.main_window = (GtkWindow *)gtk_application_window_new (app);
   	gtk_window_set_title ( gmpbase.main_window, "Media Player & Digital TV");
-  	gtk_window_set_default_size ( gmpbase.main_window, 800, 400 );
+  	gtk_window_set_default_size ( gmpbase.main_window, 900, 400 );
 	g_signal_connect ( gmpbase.main_window, "destroy", G_CALLBACK ( gmp_base_quit ), NULL );
 
 	gtk_window_set_icon ( gmpbase.main_window, gmpbase.tv_logo );
@@ -237,7 +239,7 @@ static void gmp_base_win ( GtkApplication *app )
 	gmp_base_button ( bt_hbox, "gmp-mp", 256, *(gmp_base_set_mp) );
 	gmp_base_button ( bt_hbox, "gmp-tv", 256, *(gmp_base_set_tv) );
 
-  	gtk_box_pack_start ( gmpbase.bs_vbox, GTK_WIDGET ( bt_hbox ), TRUE,  FALSE,  5 );
+  	gtk_box_pack_start ( gmpbase.bs_vbox, GTK_WIDGET ( bt_hbox ), TRUE,  TRUE,  5 );
 
 
   	GtkBox *bc_hbox = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
@@ -246,7 +248,7 @@ static void gmp_base_win ( GtkApplication *app )
 	gmp_base_button ( bc_hbox, "gmp-about",    48, *(gmp_base_set_about) );
 	gmp_base_button ( bc_hbox, "gmp-shutdown", 48, *(gmp_base_quit)      );
 
-	gtk_box_pack_start ( gmpbase.bs_vbox, GTK_WIDGET ( bc_hbox ), TRUE,  FALSE,  5 );
+	gtk_box_pack_start ( gmpbase.bs_vbox, GTK_WIDGET ( bc_hbox ), FALSE,  FALSE,  5 );
 
 
 	struct trw_columns trw_cols_tv_n[] =
@@ -276,7 +278,7 @@ static void gmp_base_win ( GtkApplication *app )
 	gtk_widget_hide ( GTK_WIDGET ( gmpbase.tv_vbox ) );
 	gtk_widget_hide ( GTK_WIDGET ( gmpbase.mp_vbox ) );
 
-	gtk_window_resize ( gmpbase.main_window, 800, 400 );
+	gtk_window_resize ( gmpbase.main_window, 900, 400 );
 	
 	if ( gmpbase.lists_argv != NULL ) 
 	{
