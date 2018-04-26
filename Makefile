@@ -19,7 +19,7 @@
 prefix      = $(HOME)/.local
 
 program     = helia
-version     = 2.4
+version     = 2.5
 bindir      = $(prefix)/bin
 datadir     = $(prefix)/share
 desktopdir  = $(datadir)/applications
