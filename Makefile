@@ -37,7 +37,7 @@ objs  = $(srcs:.c=.o)
 all: cofigure genres build
 
 cofigure:
-	@sed 's|=/.*/helia|=$(bindir)/helia|g' -i res/$(program).desktop
+	@sed 's|=/.*/helia|=$(bindir)/helia|g;s|bindir|$(bindir)|g' -i res/$(program).desktop
 	@sed 's|gtk_about_dialog_set_version ( dialog, ".*" );|gtk_about_dialog_set_version ( dialog, "$(version)" );|g' -i src/gmp-dvb.c
 	@for lang_ver in po/*.po; do \
 		sed 's|"Project-Id-Version: helia .*"|"Project-Id-Version: helia $(version)\\n"|g' -i $$lang_ver; \
