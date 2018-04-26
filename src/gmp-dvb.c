@@ -40,7 +40,7 @@ static void gmp_about_win ( GtkWindow *window, GdkPixbuf *logo )
     const gchar *license     = "This program is free software. \nGNU Lesser General Public License \nwww.gnu.org/licenses/lgpl.html";
 
     gtk_about_dialog_set_program_name ( dialog, "Helia" );
-    gtk_about_dialog_set_version ( dialog, "2.4" );
+    gtk_about_dialog_set_version ( dialog, "2.5" );
     gtk_about_dialog_set_license ( dialog, license );
     gtk_about_dialog_set_authors ( dialog, authors );
 	gtk_about_dialog_set_translator_credits ( dialog, translators );
