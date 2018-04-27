@@ -256,7 +256,7 @@ static void gmp_base_win ( GtkApplication *app )
 		{ "Num", TRUE  }, { _("Channels"), TRUE  }, { "Data", FALSE }
 	};
 
-	gmp_media_win ( gmpbase.tv_vbox, gmpbase.tv_logo, TRUE, trw_cols_tv_n, G_N_ELEMENTS ( trw_cols_tv_n ) );
+	gmp_media_win ( gmpbase.tv_vbox, gdk_pixbuf_flip ( gmpbase.tv_logo, TRUE ), TRUE, trw_cols_tv_n, G_N_ELEMENTS ( trw_cols_tv_n ) );
 
 
 	struct trw_columns trw_cols_pl_n[] =
