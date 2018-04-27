@@ -747,7 +747,7 @@ static void gmp_media_save ( GtkButton *button, GtkWidget *tree_view )
 
         gmp_add_filter ( dialog, gmpmedia.media_tv_pl ? "conf" : "m3u", gmpmedia.media_tv_pl ? "*.conf" : "*.m3u" );
 
-		gchar *dir_conf = g_strdup_printf ( "%s/gtv", g_get_user_config_dir () );
+		gchar *dir_conf = g_strdup_printf ( "%s/helia", g_get_user_config_dir () );
 			gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER ( dialog ), gmpmedia.media_tv_pl ? dir_conf : g_get_home_dir () );
 		g_free ( dir_conf );
         
