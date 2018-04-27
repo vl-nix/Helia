@@ -164,15 +164,25 @@ static void gmp_base_init ()
 {
 	gmp_rec_dir = g_strdup ( g_get_home_dir () );
 
-    gchar *dir_conf = g_strdup_printf ( "%s/gtv", g_get_user_config_dir () );
+    gchar *dir_conf_old = g_strdup_printf ( "%s/gtv", g_get_user_config_dir () );
+    gchar *dir_conf_new = g_strdup_printf ( "%s/helia", g_get_user_config_dir () );
 
-    if ( !g_file_test ( dir_conf, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR ) )
+    if ( g_file_test ( dir_conf_old, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR ) )
     {
-        g_mkdir ( dir_conf, 0777 );
-        g_print ( "Creating %s directory. \n", dir_conf );
+		g_rename ( dir_conf_old, dir_conf_new );
+		g_print ( "Renames %s directory. \n", dir_conf_new );
     }
+    else
+    {
+		if ( !g_file_test ( dir_conf_new, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR ) )
+		{
+			g_mkdir ( dir_conf_new, 0777 );
+			g_print ( "Creating %s directory. \n", dir_conf_new );		
+		}
+	}
 
-    g_free ( dir_conf );
+	g_free ( dir_conf_new );
+    g_free ( dir_conf_old );
 
 
 	opacity_cnt = 0.85;
@@ -180,8 +190,8 @@ static void gmp_base_init ()
 	opacity_win = 1.0;
 	resize_icon = 28;
 	
-    gmp_dvb_conf = g_strconcat ( g_get_user_config_dir (), "/gtv/gtv.conf",         NULL );
-	ch_conf      = g_strconcat ( g_get_user_config_dir (), "/gtv/gtv-channel.conf", NULL );
+    gmp_dvb_conf = g_strconcat ( g_get_user_config_dir (), "/helia/gtv.conf",         NULL );
+	ch_conf      = g_strconcat ( g_get_user_config_dir (), "/helia/gtv-channel.conf", NULL );
 
     if ( g_file_test ( gmp_dvb_conf, G_FILE_TEST_EXISTS ) )
 		gmp_pref_read_config ( gmp_dvb_conf );
