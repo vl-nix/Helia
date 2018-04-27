@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: helia 2.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-25 14:57+0300\n"
+"POT-Creation-Date: 2018-04-27 03:13+0300\n"
 "PO-Revision-Date: 2018-04-25 14:53+0300\n"
 "Last-Translator: <st.pr-u@yandex.ua>\n"
 "Language-Team: Ukrainian\n"
@@ -35,7 +35,7 @@ msgstr "Смуга  Hz"
 msgid "Brightness"
 msgstr "Яскравість"
 
-#: src/gmp-dvb.c:254 src/gmp-scan.c:73 src/gmp-scan.c:637
+#: src/gmp-dvb.c:256 src/gmp-scan.c:73 src/gmp-scan.c:637
 msgid "Channels"
 msgstr "Канали"
 
@@ -59,7 +59,7 @@ msgstr "Контраст"
 msgid "Convert"
 msgstr "Конвертувати"
 
-#: src/gmp-dvb.c:262
+#: src/gmp-dvb.c:264
 msgid "Files"
 msgstr "Файли"
 
