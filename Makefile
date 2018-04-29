@@ -19,11 +19,13 @@
 prefix      = $(HOME)/.local
 
 program     = helia
-version     = 2.5
+version     = 2.6
 bindir      = $(prefix)/bin
 datadir     = $(prefix)/share
 desktopdir  = $(datadir)/applications
+localedir   = $(datadir)/locale
 
+obj_locale  = $(subst :, ,$(LANGUAGE))
 cflags_libs = `pkg-config gtk+-3.0 --cflags --libs` `pkg-config gstreamer-video-1.0 --cflags --libs` `pkg-config gstreamer-mpegts-1.0 --libs`
 
 xres  = $(wildcard res/*.xml)
@@ -34,7 +36,7 @@ srcs += res/helia.gresource.c
 objs  = $(srcs:.c=.o)
 
 
-all: cofigure genres build
+all: cofigure genres setlcdir build revlcdir msgfmt
 
 cofigure:
 	@sed 's|=/.*/helia|=$(bindir)/helia|g;s|bindir|$(bindir)|g' -i res/$(program).desktop
@@ -63,16 +65,46 @@ genres: $(gres)
 	@echo
 
 
+setlcdir:
+	@sed 's|/usr/share/locale/|$(localedir)|g' -i src/gmp-dvb.c
+
+revlcdir:
+	@sed 's|$(localedir)|/usr/share/locale/|g' -i src/gmp-dvb.c
+
+genpot:
+	mkdir -p po
+	xgettext src/*.c --language=C --keyword=N_ --keyword=_ --escape --sort-output --from-code=UTF-8 \
+	--package-name=$(program) --package-version=$(version) -o po/$(program).pot
+	sed 's|PACKAGE VERSION|$(program) $(version)|g;s|charset=CHARSET|charset=UTF-8|g' -i po/$(program).pot
+
+mergeinit: genpot
+	for lang in $(obj_locale); do \
+		echo $$lang; \
+		if [ ! -f po/$$lang.po ]; then msginit -i po/$(program).pot --locale=$$lang -o po/$$lang.po; \
+		else msgmerge --update po/$$lang.po po/$(program).pot; fi \
+	done
+
+msgfmt:
+	@for language in po/*.po; do \
+		lang=`basename $$language | cut -f 1 -d '.'`; \
+		mkdir -pv locale/$$lang/LC_MESSAGES/; \
+		msgfmt -v $$language -o locale/$$lang/LC_MESSAGES/$(program).mo; \
+	done
+
+
 install:
 	mkdir -p $(DESTDIR)$(bindir) $(DESTDIR)$(datadir) $(DESTDIR)$(desktopdir)
 	install -Dp -m0755 $(program) $(DESTDIR)$(bindir)/$(program)
 	install -Dp -m0644 res/$(program).desktop $(DESTDIR)$(desktopdir)/$(program).desktop
+	cp -r locale $(DESTDIR)$(datadir)
 
 uninstall:
-	rm -fr $(DESTDIR)$(bindir)/$(program) $(DESTDIR)$(desktopdir)/$(program).desktop
+	rm -f $(DESTDIR)$(bindir)/$(program) $(DESTDIR)$(desktopdir)/$(program).desktop
+	rm -fr $(DESTDIR)$(localedir)/*/*/$(program).mo
 
 clean:
 	rm -f $(program) src/*.o res/*.o res/*.c po/$(program).pot po/*.po~
+	rm -fr locale
 
 
 # Show variables.
@@ -83,6 +115,8 @@ info:
 	@echo 'bindir       :' $(bindir)
 	@echo 'datadir      :' $(datadir)
 	@echo 'desktopdir   :' $(desktopdir)
+	@echo 'localedir    :' $(localedir)
+	@echo 'obj_locale   :' $(obj_locale)
 	@echo
 
 
@@ -108,6 +142,11 @@ help:
 	@echo '  uninstall  uninstall'
 	@echo '  clean      clean all'
 	@echo	
+	@echo 'For translators:'
+	@echo '  genpot     only xgettext -> pot'
+	@echo '  mergeinit  genpot and ( msgmerge or msginit ) pot -> po'
+	@echo '  msgfmt     only msgfmt po -> mo'
+	@echo
 	@echo 'Showing debug:'
 	@echo '  G_MESSAGES_DEBUG=all ./$(program)'
 	@echo

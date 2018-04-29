@@ -35,13 +35,14 @@ static void gmp_about_win ( GtkWindow *window, GdkPixbuf *logo )
     GtkAboutDialog *dialog = (GtkAboutDialog *)gtk_about_dialog_new ();
     gtk_window_set_transient_for ( (GtkWindow *)dialog, window );
 
-    const gchar *authors[]   = { "Stepan Perun", " ", NULL };
+    const gchar *authors[]   = { "Stepan Perun",   " ", NULL };
+    const gchar *altteam[]   = { "Anton Midyukov", " ", NULL };
     const gchar *artists[]   = { "Itzik Gur", "Stepan Perun", " ", NULL };
-	const gchar *translators = " \n";
+	const gchar *translators = "Anton Midyukov \n";
     const gchar *license     = "This program is free software. \nGNU Lesser General Public License \nwww.gnu.org/licenses/lgpl.html";
 
     gtk_about_dialog_set_program_name ( dialog, "Helia" );
-    gtk_about_dialog_set_version ( dialog, "2.5" );
+    gtk_about_dialog_set_version ( dialog, "2.6" );
     gtk_about_dialog_set_license ( dialog, license );
 	gtk_about_dialog_set_authors ( dialog, authors );
 	gtk_about_dialog_set_artists ( dialog, artists );
@@ -49,6 +50,8 @@ static void gmp_about_win ( GtkWindow *window, GdkPixbuf *logo )
     gtk_about_dialog_set_website ( dialog,   "https://github.com/vl-nix/helia" );
     gtk_about_dialog_set_copyright ( dialog, "Copyright 2018 Helia  ( Gtv-Dvb )" );
     gtk_about_dialog_set_comments  ( dialog, "Media Player & IPTV & Digital TV \nDVB-T2/S2/C, ATSC, DTMB" );
+
+	gtk_about_dialog_add_credit_section ( dialog, "ALT Linux Team", altteam );
 
     if ( logo != NULL )
     {	

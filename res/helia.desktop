@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Helia
-Comment=Media Player & IPTV & Digital TV
+Comment=Digital TV & Media Player & IPTV 
 Type=Application
 TryExec=bindir/helia
 Exec=bindir/helia %U
