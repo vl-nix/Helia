@@ -714,7 +714,9 @@ void gmp_dvb_mute_set_tv ( GtkWidget *widget )
 void gmp_dvb_volume_changed_tv ( gdouble value )
 {
     if ( GST_ELEMENT_CAST ( gmpgsttv.dvbsrc_tv )->current_state == GST_STATE_PLAYING )
+	{
         g_object_set ( gmpgsttv.dvb_all_n[16], "volume", value, NULL );
+	}
 
 	gmpgsttv.volume_tv = value;
 	
