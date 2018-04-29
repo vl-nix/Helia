@@ -65,8 +65,10 @@ static GstBusSyncReply gmp_player_bus_sync_handler ( GstBus *bus, GstMessage *me
 		g_debug ( "gmp_player_bus_sync_handler:: pending %s", gst_bus_have_pending ( bus ) ? "TRUE" : "FALSE" );
 
     if ( !gst_is_video_overlay_prepare_window_handle_message ( message ) )
+	{
         return GST_BUS_PASS;
-
+	}
+	
 	guintptr handle = gmpgstpl.win_handle_pl;
 
     if ( handle != 0 )
