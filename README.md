@@ -42,7 +42,7 @@ Channels
 Design
 ------
 
-* Dark Theme ( recommended )
+* [Dark Theme](https://github.com/GNOME/gnome-themes-extra) ( recommended )
 
 
 Makefile
