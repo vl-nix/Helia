@@ -1,0 +1,128 @@
+# Dutch translations for helia package.
+# Copyright (C) 2018 THE helia'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the helia package.
+# <vistausss@outlook.com>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: helia 4.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-07-02 02:40+0300\n"
+"PO-Revision-Date: 2018-05-05 12:24+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
+"Language-Team: Dutch\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#: src/helia-scan.c:718 src/helia-scan.c:767 src/helia-scan.c:783
+msgid "All Channels"
+msgstr "Alle kanalen"
+
+#: src/helia-eqa.c:132
+msgid "Audio equalizer"
+msgstr "Audio-equalizer"
+
+#: src/helia-eqa.c:22
+msgid "Bandwidth  Hz"
+msgstr "Bandbreedte  Hz"
+
+#: src/helia-eqv.c:17
+msgid "Brightness"
+msgstr "Helderheid"
+
+#: src/helia-base.c:341 src/helia-scan.c:75 src/helia-scan.c:790
+msgid "Channels"
+msgstr "Kanalen"
+
+#: src/helia-panel-treeview.c:140 src/helia-service.c:88
+msgid "Choose file"
+msgstr "Bestand kiezen"
+
+#: src/helia-service.c:113
+#, fuzzy
+msgid "Choose files"
+msgstr "Bestand kiezen"
+
+#: src/helia-service.c:138
+msgid "Choose folder"
+msgstr "Map kiezen"
+
+#: src/helia-panel-treeview.c:212
+msgid "Clear"
+msgstr "Wissen"
+
+#: src/helia-eqv.c:18
+msgid "Contrast"
+msgstr "Contrast"
+
+#: src/helia-convert.c:75
+msgid "Convert"
+msgstr "Converteren"
+
+#: src/helia-base.c:350
+msgid "Files"
+msgstr "Bestanden"
+
+#: src/helia-convert.c:86
+msgid "Format  DVBv5"
+msgstr "Formaat  DVBv5"
+
+#: src/helia-eqa.c:21
+msgid "Frequency  Hz"
+msgstr "Frequentie  Hz"
+
+#: src/helia-pref.c:364
+msgid "General"
+msgstr ""
+
+#: src/helia-eqv.c:20
+msgid "Hue"
+msgstr "Tint"
+
+#: src/helia-eqa.c:20
+msgid "Level  dB"
+msgstr "Niveau  dB"
+
+#: src/helia-scan.c:718
+msgid "Other"
+msgstr "Overig"
+
+#: src/helia-pref.c:342
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+#: src/helia-scan.c:718
+msgid "Radio"
+msgstr "Radio"
+
+#: src/helia-eqv.c:19
+msgid "Saturation"
+msgstr "Verzadiging"
+
+#: src/helia-scan.c:67 src/helia-scan.c:1428
+msgid "Scanner"
+msgstr "Scanner"
+
+#: src/helia-pref.c:365
+msgid "Shortcut"
+msgstr ""
+
+#: src/helia-scan.c:718
+msgid "TV"
+msgstr "TV"
+
+#: src/helia-scan.c:409 src/helia-scan.c:414
+msgid "Undefined"
+msgstr "Niet-opgegeven"
+
+#: src/helia-scan.c:294
+msgid "Undefined \n"
+msgstr "Niet-opgegeven \n"
+
+#: src/helia-eqv.c:88
+msgid "Video equalizer"
+msgstr "Video-equalizer"

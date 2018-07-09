@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Helia
+Comment=Digital TV & Media Player & IPTV 
+Type=Application
+TryExec=bindir/helia
+Exec=bindir/helia %U
+Icon=display
+Terminal=false
+Categories=GTK;AudioVideo;Audio;Video;Player;TV;
+MimeType=application/ogg;audio/mp2;audio/mp4;audio/mpeg;audio/mpegurl;audio/ogg;audio/x-m4a;audio/x-matroska;audio/x-mp3;audio/x-mpeg;audio/x-mpegurl;audio/x-pn-wav;audio/x-wav;audio/x-wavpack;audio/x-vorbis;audio/x-vorbis+ogg;video/mp2t;video/mp4;video/mp4v-es;video/mpeg;video/msvideo;video/ogg;video/quicktime;video/vivo;video/vnd.divx;video/vnd.mpegurl;video/vnd.rn-realvideo;video/vnd.vivo;video/webm;video/x-anim;video/x-avi;video/x-matroska;video/x-mpeg;video/x-mpeg2;video/x-ogm+ogg;video/x-theora+ogg;
