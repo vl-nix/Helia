@@ -18,4 +18,4 @@ G_DECLARE_FINAL_TYPE ( EncProp, enc_prop, ENCPROP, WINDOW, GtkWindow )
 
 EncProp * enc_prop_new (void);
 
-void enc_prop_set_run ( GtkWindow *, GstElement *, GstElement *, GstElement *, gboolean, EncProp * );
+void enc_prop_set_run ( GtkWindow *, GstElement *, GstElement *, GstElement *, GstElement *, gboolean, EncProp * );

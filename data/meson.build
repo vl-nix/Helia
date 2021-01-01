@@ -12,8 +12,7 @@ set_desktop = [
   ['ICON', 'applications-multimedia'],
   ['TERMINAL', 'false'],
   ['TYPE', 'Application'],
-  ['CATEGORIES', 'GTK;GNOME;AudioVideo;Player;Video;'],
-  ['VERSION', meson.project_version()]
+  ['CATEGORIES', 'GTK;AudioVideo;Player;Video;']
 ]
 
 foreach props: set_desktop

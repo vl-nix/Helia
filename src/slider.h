@@ -12,18 +12,10 @@
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 
-#define SLIDER_TYPE_BOX                     slider_get_type ()
+#define SLIDER_TYPE_PLAYER slider_get_type ()
 
-G_DECLARE_FINAL_TYPE ( Slider, slider, HELIA, SLIDER, GtkBox )
+G_DECLARE_FINAL_TYPE ( Slider, slider, SLIDER, PLAYER, GtkBox )
 
-Slider * slider_new (void);
+Slider * slider_new ( void );
 
-GtkScale * slider_get_scale ( Slider * );
-
-void slider_set_signal_id ( Slider *, ulong  );
-
-void slider_clear_all ( Slider * );
-
-void slider_update ( Slider *, double , double  );
-
-void slider_set_data ( Slider *, gint64 , uint8_t , gint64 , uint8_t , gboolean );
+void slider_update ( gint64, uint, gint64, uint, gboolean, Slider * );

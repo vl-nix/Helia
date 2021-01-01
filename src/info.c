@@ -72,7 +72,7 @@ static void helia_info_discovered_cb ( G_GNUC_UNUSED GstDiscoverer *discoverer, 
 		uint width = gst_discoverer_video_info_get_width ( video_streams->data );
 		uint height = gst_discoverer_video_info_get_height ( video_streams->data );
 
-		char wh[100] = {};
+		char wh[100];
 		sprintf ( wh, "%u × %u", width, height );
 
 		gtk_label_set_text ( inf->label_wh, wh );
@@ -80,7 +80,7 @@ static void helia_info_discovered_cb ( G_GNUC_UNUSED GstDiscoverer *discoverer, 
 		uint fps_n = gst_discoverer_video_info_get_framerate_num   ( video_streams->data );
 		uint fps_d = gst_discoverer_video_info_get_framerate_denom ( video_streams->data );
 
-		char fps[100] = {};
+		char fps[100] = { ' ' };
 		if ( fps_n > 0 && fps_d > 0 ) { sprintf ( fps, "%u", ( fps_n + fps_d/2 ) / fps_d ); inf->fps = g_strdup ( fps ); }
 	}
 
@@ -204,7 +204,7 @@ static void helia_info_change_hide_show_subtitle ( GtkButton *button, GtkComboBo
 
 	if ( helia_check_icon_theme ( "helia-set" ) )
 	{
-		GtkImage *image = helia_create_image ( ( !sensitive ) ? "helia-set" : "helia-unset", ICON_SIZE );
+		GtkImage *image = helia_create_image ( ( !sensitive ) ? "helia-set" : "helia-unset", 16 );
 		gtk_button_set_image ( button, GTK_WIDGET ( image ) );
 	}
 }
@@ -281,7 +281,7 @@ static const char * helia_info_get_str_tag ( GstElement *element, char *get_tag,
 
 static void helia_info_get_title_artist ( GstElement *element, GtkEntry *entry_title )
 {
-	char buf[1024] = {};
+	char buf[1024];
 	const char *title_new = NULL;
 
 	const char *title = helia_info_get_str_tag ( element, "get-video-tags", GST_TAG_TITLE  );
@@ -311,7 +311,9 @@ static gboolean helia_info_update_bitrate_video ( Info *info )
 
 	g_autofree char *bitrate_video = helia_info_get_int_vat ( info->element, "get-video-tags", c_video, GST_TAG_BITRATE );
 
-	char label[256] = {};
+	if ( !bitrate_video && !info->fps ) return TRUE;
+
+	char label[256] = { ' ' };
 
 	if ( bitrate_video && info->fps )
 		sprintf ( label, "%s   ---   Fps %s", bitrate_video, info->fps );
@@ -339,7 +341,9 @@ static gboolean helia_info_update_bitrate_audio ( Info *info )
 
 	g_autofree char *bitrate_audio = helia_info_get_int_vat ( info->element, "get-audio-tags", c_audio, GST_TAG_BITRATE );
 
-	char label[256] = {};
+	if ( !bitrate_audio && !info->audio ) return TRUE;
+
+	char label[256] = { ' ' };
 
 	if ( bitrate_audio && info->audio )
 		sprintf ( label, "%s   ---   %s", bitrate_audio, info->audio );
@@ -409,10 +413,15 @@ static GtkBox * helia_info_mp ( GstElement *element, Info *info )
 	gtk_grid_set_row_homogeneous    ( grid, TRUE );
 	gtk_grid_set_column_homogeneous ( grid, TRUE );
 
+	gtk_widget_set_visible ( GTK_WIDGET ( v_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( grid  ), TRUE );
+
 	GtkBox *h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
+	gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
 
 	GtkEntry *entry_title = (GtkEntry *) gtk_entry_new ();
 	helia_info_get_title_artist ( element, entry_title );
+	gtk_widget_set_visible ( GTK_WIDGET ( entry_title ), TRUE );
 
 	const char *icon = helia_check_icon_theme ( "helia-save" ) ? "helia-save" : "document-save";
 	gtk_entry_set_icon_from_icon_name ( entry_title, GTK_ENTRY_ICON_SECONDARY, icon );
@@ -422,6 +431,7 @@ static GtkBox * helia_info_mp ( GstElement *element, Info *info )
 	gtk_box_pack_start ( v_box, GTK_WIDGET ( h_box ), FALSE, FALSE, 0 );
 
 	h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
+	gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
 
 	g_autofree char *uri = NULL;
 	g_object_get ( element, "current-uri", &uri, NULL );
@@ -429,11 +439,13 @@ static GtkBox * helia_info_mp ( GstElement *element, Info *info )
 	GtkEntry *entry_fl = (GtkEntry *) gtk_entry_new ();
 	g_object_set ( entry_fl, "editable", FALSE, NULL );
 	gtk_entry_set_text ( entry_fl, ( uri ) ? uri : "None" );
+	gtk_widget_set_visible ( GTK_WIDGET ( entry_fl ), TRUE );
 
 	gtk_box_pack_start ( h_box, GTK_WIDGET ( entry_fl ), TRUE,  TRUE,  0 );
 	gtk_box_pack_start ( v_box, GTK_WIDGET ( h_box    ), FALSE, FALSE, 0 );
 
 	info->label_wh = (GtkLabel *)gtk_label_new ( " " );
+	gtk_widget_set_visible ( GTK_WIDGET ( info->label_wh ), TRUE );
 	gtk_box_pack_start ( v_box, GTK_WIDGET ( info->label_wh ), FALSE, FALSE, 5 );
 
 	int n_video = 0, n_audio = 0, n_text = 0, c_video = 0, c_audio = 0, c_text = 0;
@@ -468,11 +480,13 @@ static GtkBox * helia_info_mp ( GstElement *element, Info *info )
 	{
 		GtkImage *image = helia_create_image ( data_n[c].name, 48 );
 		gtk_widget_set_halign ( GTK_WIDGET ( image ), GTK_ALIGN_START );
+		gtk_widget_set_visible ( GTK_WIDGET ( image ), TRUE );
 		gtk_grid_attach ( grid, GTK_WIDGET ( image ), 0, c, 1, 2 );
 
 		if ( c == 0 || c == 2 || c == 4 )
 		{
 			GtkComboBoxText *combo = (GtkComboBoxText *)gtk_combo_box_text_new ();
+			gtk_widget_set_visible ( GTK_WIDGET ( combo ), TRUE );
 
 			for ( i = 0; i < data_n[c].n_avt; i++ )
 			{
@@ -495,8 +509,10 @@ static GtkBox * helia_info_mp ( GstElement *element, Info *info )
 			{
 				h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 				gtk_box_set_spacing ( h_box, 5 );
+				gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
 
-				GtkButton *button = helia_create_button ( NULL, ( status_subtitle ) ? "helia-set" : "helia-unset", "●", ICON_SIZE ); 
+				GtkButton *button = helia_create_button ( NULL, ( status_subtitle ) ? "helia-set" : "helia-unset", "●", 16 ); 
+				gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 				g_signal_connect ( button, "clicked", G_CALLBACK ( helia_info_change_state_subtitle     ), element );
 				g_signal_connect ( button, "clicked", G_CALLBACK ( helia_info_change_hide_show_subtitle ), combo );
 
@@ -513,6 +529,7 @@ static GtkBox * helia_info_mp ( GstElement *element, Info *info )
 		{
 			GtkLabel *label = (GtkLabel *)gtk_label_new ( ( data_n[c].info ) ? data_n[c].info : " " );
 			gtk_widget_set_halign ( GTK_WIDGET ( label ), GTK_ALIGN_START );
+			gtk_widget_set_visible ( GTK_WIDGET ( label ), TRUE );
 			gtk_grid_attach ( grid, GTK_WIDGET ( label ), 1, c, 1, 1 );
 
 			data_n[c].f ( label, info );
@@ -561,16 +578,21 @@ void helia_info_player ( GtkWindow *win_base, GtkTreeView *treeview, GstElement 
 	GtkBox *m_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_VERTICAL,   0 );
 	GtkBox *h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 
+	gtk_widget_set_visible ( GTK_WIDGET ( m_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
+
 	gtk_box_pack_start ( m_box, GTK_WIDGET ( helia_info_mp ( element, info ) ), FALSE, FALSE, 0 );
 
-	GtkButton *button_close = helia_create_button ( h_box, "helia-exit", "🞬", ICON_SIZE );
+	GtkButton *button_close = helia_create_button ( h_box, "helia-exit", "🞬", 16 );
+	gtk_widget_set_visible ( GTK_WIDGET ( button_close ), TRUE );
 	g_signal_connect_swapped ( button_close, "clicked", G_CALLBACK ( gtk_widget_destroy ), window );
 
 	gtk_box_pack_end ( m_box, GTK_WIDGET ( h_box ), FALSE, FALSE, 5 );
 
 	gtk_container_set_border_width ( GTK_CONTAINER ( m_box ), 10 );
 	gtk_container_add   ( GTK_CONTAINER ( window ), GTK_WIDGET ( m_box ) );
-	gtk_widget_show_all ( GTK_WIDGET ( window ) );
+
+	gtk_window_present ( window );
 
 	double opacity = gtk_widget_get_opacity ( GTK_WIDGET ( win_base ) );
 	gtk_widget_set_opacity ( GTK_WIDGET ( window ), opacity );
@@ -590,6 +612,9 @@ static GtkBox * helia_info_tv ( const char *data, GstElement *element, GtkComboB
 	gtk_grid_set_row_homogeneous    ( grid, TRUE );
 	gtk_grid_set_column_homogeneous ( grid, TRUE );
 
+	gtk_widget_set_visible ( GTK_WIDGET ( v_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( grid  ), TRUE );
+
 	int adapter = 0, frontend = 0, delsys = 0;
 	g_object_get ( element, "adapter",  &adapter,  NULL );
 	g_object_get ( element, "frontend", &frontend, NULL );
@@ -597,7 +622,9 @@ static GtkBox * helia_info_tv ( const char *data, GstElement *element, GtkComboB
 
 	g_autofree char *dvb_name = scan_get_dvb_info ( adapter, frontend );
 
-	gtk_box_pack_start ( v_box, GTK_WIDGET ( gtk_label_new ( dvb_name ) ), FALSE, FALSE, 0 );
+	GtkLabel *label = (GtkLabel *)gtk_label_new ( dvb_name );
+	gtk_widget_set_visible ( GTK_WIDGET ( label ), TRUE );
+	gtk_box_pack_start ( v_box, GTK_WIDGET ( label ), FALSE, FALSE, 0 );
 
 	char **fields = g_strsplit ( data, ":", 0 );
 	uint numfields = g_strv_length ( fields );
@@ -605,7 +632,7 @@ static GtkBox * helia_info_tv ( const char *data, GstElement *element, GtkComboB
 	GtkEntry *entry_ch = (GtkEntry *) gtk_entry_new ();
 	g_object_set ( entry_ch, "editable", FALSE, NULL );
 	gtk_entry_set_text ( entry_ch, fields[0] );
-
+	gtk_widget_set_visible ( GTK_WIDGET ( entry_ch  ), TRUE );
 	gtk_box_pack_start ( v_box, GTK_WIDGET ( entry_ch ), FALSE, FALSE, 0 );
 
 	gtk_box_pack_start ( v_box, GTK_WIDGET ( combo_lang ), FALSE, FALSE, 0 );
@@ -632,6 +659,7 @@ static GtkBox * helia_info_tv ( const char *data, GstElement *element, GtkComboB
 		GtkLabel *label = (GtkLabel *)gtk_label_new ( set );
 		gtk_widget_set_halign ( GTK_WIDGET ( label ), GTK_ALIGN_START );
 
+		gtk_widget_set_visible ( GTK_WIDGET ( label ), TRUE );
 		gtk_grid_attach ( grid, GTK_WIDGET ( label ), 0, j+1, 1, 1 );
 
 		const char *set_v = scan_get_info_descr_vis ( splits[0], atoi ( splits[1] ) );
@@ -647,7 +675,7 @@ static GtkBox * helia_info_tv ( const char *data, GstElement *element, GtkComboB
 			else
 				dat = dat / 1000000;
 
-			char buf[100] = {};
+			char buf[100];
 			sprintf ( buf, "%ld", dat );
 
 			label = (GtkLabel *)gtk_label_new ( buf );
@@ -657,6 +685,7 @@ static GtkBox * helia_info_tv ( const char *data, GstElement *element, GtkComboB
 
 		gtk_widget_set_halign ( GTK_WIDGET ( label ), GTK_ALIGN_START );
 
+		gtk_widget_set_visible ( GTK_WIDGET ( label ), TRUE );
 		gtk_grid_attach ( grid, GTK_WIDGET ( label ), 1, j+1, 1, 1 );
 
 		g_strfreev (splits);
@@ -685,17 +714,23 @@ GtkComboBoxText * helia_info_dvb ( const char *data, GtkWindow *win_base, GstEle
 	GtkBox *m_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_VERTICAL,   0 );
 	GtkBox *h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 
+	gtk_widget_set_visible ( GTK_WIDGET ( m_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
+
 	GtkComboBoxText *combo_lang = (GtkComboBoxText *)gtk_combo_box_text_new ();
+	gtk_widget_set_visible ( GTK_WIDGET ( combo_lang ), TRUE );
 	gtk_box_pack_start ( m_box, GTK_WIDGET ( helia_info_tv ( data, element, combo_lang ) ), FALSE, FALSE, 0 );
 
-	GtkButton *button_close = helia_create_button ( h_box, "helia-exit", "🞬", ICON_SIZE );
+	GtkButton *button_close = helia_create_button ( h_box, "helia-exit", "🞬", 16 );
+	gtk_widget_set_visible ( GTK_WIDGET ( button_close ), TRUE );
 	g_signal_connect_swapped ( button_close, "clicked", G_CALLBACK ( gtk_widget_destroy ), window );
 
 	gtk_box_pack_end ( m_box, GTK_WIDGET ( h_box ), FALSE, FALSE, 5 );
 
 	gtk_container_set_border_width ( GTK_CONTAINER ( m_box ), 10 );
 	gtk_container_add   ( GTK_CONTAINER ( window ), GTK_WIDGET ( m_box ) );
-	gtk_widget_show_all ( GTK_WIDGET ( window ) );
+
+	gtk_window_present ( window );
 
 	double opacity = gtk_widget_get_opacity ( GTK_WIDGET ( win_base ) );
 	gtk_widget_set_opacity ( GTK_WIDGET ( window ), opacity );

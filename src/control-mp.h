@@ -12,10 +12,9 @@
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 
-#define CONTROLMP_TYPE_WINDOW control_mp_get_type ()
+#define CONTROL_TYPE_MP control_mp_get_type ()
 
-G_DECLARE_FINAL_TYPE ( ControlMp, control_mp, CONTROLMP, WINDOW, GtkWindow )
+G_DECLARE_FINAL_TYPE ( ControlMp, control_mp, CONTROL, MP, GtkWindow )
 
-ControlMp * control_mp_new (void);
+ControlMp * control_mp_new ( uint16_t, uint16_t, double, gboolean, GtkWindow * );
 
-void control_mp_set_run ( gboolean , GstElement *, GtkWindow *, ControlMp * );

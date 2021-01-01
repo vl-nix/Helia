@@ -25,7 +25,7 @@ struct _Level
 
 G_DEFINE_TYPE ( Level, level, GTK_TYPE_BOX )
 
-void level_set_sgn_snr ( uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec, Level *level )
+void level_update ( uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec, Level *level )
 {
 	gtk_progress_bar_set_fraction ( level->bar_sgn, (double)sgl / 100 );
 	gtk_progress_bar_set_fraction ( level->bar_snr, (double)snr / 100 );
@@ -61,6 +61,10 @@ static void level_init ( Level *level )
 	level->bar_sgn = (GtkProgressBar *)gtk_progress_bar_new ();
 	level->bar_snr = (GtkProgressBar *)gtk_progress_bar_new ();
 
+	gtk_widget_set_visible ( GTK_WIDGET ( level->sgn_snr ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( level->bar_sgn ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( level->bar_snr ), TRUE );
+
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->sgn_snr ), FALSE, FALSE, 0 );
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->bar_sgn ), FALSE, FALSE, 0 );
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->bar_snr ), FALSE, FALSE, 0 );
@@ -78,5 +82,5 @@ static void level_class_init ( LevelClass *class )
 
 Level * level_new ( void )
 {
-	return g_object_new ( LEVEL_TYPE_BOX, NULL );
+	return g_object_new ( LEVEL_TYPE_DVB, NULL );
 }

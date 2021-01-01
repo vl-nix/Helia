@@ -9,9 +9,6 @@
 
 #pragma once
 
-#include "dvb.h"
-#include "player.h"
-
 #include <gtk/gtk.h>
 
 enum cols_n
@@ -31,15 +28,12 @@ struct _Column
 	uint8_t num;
 };
 
-GtkBox * create_treeview_box ( GtkTreeView * );
+#define TREE_TYPE_VIEW                          tree_view_get_type ()
 
-GtkTreeView * create_treeview ( uint8_t , Column * );
+G_DECLARE_FINAL_TYPE ( TreeView, tree_view, TREE, VIEW, GtkTreeView )
 
-void helia_treeview_goup ( GtkTreeView * );
+TreeView * tree_view_new ( const char *title[] );
 
-void helia_treeview_down ( GtkTreeView * );
+GtkBox * create_treeview_box ( gboolean, TreeView * );
 
-void helia_treeview_remv ( GtkTreeView * );
-
-void helia_treeview_to_file ( const char *, gboolean , GtkTreeView * );
 

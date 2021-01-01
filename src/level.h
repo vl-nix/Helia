@@ -11,10 +11,10 @@
 
 #include <gtk/gtk.h>
 
-#define LEVEL_TYPE_BOX level_get_type ()
+#define LEVEL_TYPE_DVB level_get_type ()
 
-G_DECLARE_FINAL_TYPE ( Level, level, LEVEL, BOX, GtkBox )
+G_DECLARE_FINAL_TYPE ( Level, level, LEVEL, DVB, GtkBox )
 
-Level * level_new (void);
+Level * level_new ( void );
 
-void level_set_sgn_snr ( uint8_t , uint8_t , gboolean , gboolean , Level * );
+void level_update ( uint8_t, uint8_t, gboolean, gboolean, Level * );

@@ -2,6 +2,7 @@
   <gresource prefix="/helia">
     <file preprocess="to-pixdata">helia-add.png</file>
     <file preprocess="to-pixdata">helia-audio.png</file>
+    <file preprocess="to-pixdata">helia-base.png</file>
     <file preprocess="to-pixdata">helia-clear.png</file>
     <file preprocess="to-pixdata">helia-convert.png</file>
     <file preprocess="to-pixdata">helia-dark.png</file>

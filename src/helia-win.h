@@ -9,12 +9,11 @@
 
 #pragma once
 
-#include <gtk/gtk.h>
-#include <gst/gst.h>
+#include "helia-app.h"
 
-#define DVB_TYPE_OBJECT                   dvb_get_type ()
+#define HELIA_TYPE_WIN helia_win_get_type ()
 
-G_DECLARE_FINAL_TYPE ( Dvb, dvb, DVB, OBJECT, GstObject )
+G_DECLARE_FINAL_TYPE ( HeliaWin, helia_win, HELIA, WIN, GtkWindow )
 
-Dvb * dvb_new ( void );
+HeliaWin * helia_win_new ( GFile **, int, HeliaApp * );
 

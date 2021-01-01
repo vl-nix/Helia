@@ -12,9 +12,9 @@
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 
-#define DVB_TYPE_OBJECT                   dvb_get_type ()
+#define HELIA_TYPE_APP helia_app_get_type ()
 
-G_DECLARE_FINAL_TYPE ( Dvb, dvb, DVB, OBJECT, GstObject )
+G_DECLARE_FINAL_TYPE ( HeliaApp, helia_app, HELIA, APP, GtkApplication )
 
-Dvb * dvb_new ( void );
+HeliaApp * helia_app_new ( void );
 

@@ -12,4 +12,4 @@
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 
-void helia_eqv_win ( uint16_t , GtkWindow *, GstElement * );
+void helia_eqv_win ( double , GtkWindow *, GstElement * );

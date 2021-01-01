@@ -31,7 +31,7 @@ gboolean helia_check_icon_theme ( const char *name_icon )
 
 GtkImage * helia_create_image ( const char *icon, uint16_t size )
 {
-	GdkPixbuf *pixbuf = gtk_icon_theme_load_icon ( gtk_icon_theme_get_default (), icon, size, GTK_ICON_LOOKUP_USE_BUILTIN, NULL );
+	GdkPixbuf *pixbuf = gtk_icon_theme_load_icon ( gtk_icon_theme_get_default (), icon, size, GTK_ICON_LOOKUP_FORCE_SIZE, NULL );
 
 	GtkImage *image   = (GtkImage *)gtk_image_new_from_pixbuf ( pixbuf );
 	gtk_image_set_pixel_size ( image, size );

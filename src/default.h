@@ -14,6 +14,10 @@
 
 #define VOLUME 0.75
 
-#define ICON_SIZE 16
+#define ICON_SIZE 18
+
+#define WIDTH 900
+
+#define HEIGHT 400
 
 #define DEF_ICON "applications-multimedia"

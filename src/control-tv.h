@@ -12,10 +12,9 @@
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 
-#define CONTROLTV_TYPE_WINDOW control_tv_get_type ()
+#define CONTROL_TYPE_TV control_tv_get_type ()
 
-G_DECLARE_FINAL_TYPE ( ControlTv, control_tv, CONTROLTV, WINDOW, GtkWindow )
+G_DECLARE_FINAL_TYPE ( ControlTv, control_tv, CONTROL, TV, GtkWindow )
 
-ControlTv * control_tv_new (void);
+ControlTv * control_tv_new ( uint16_t, uint16_t, double, GtkWindow * );
 
-void control_tv_set_run ( gboolean , GstElement *, GtkWindow *, ControlTv * );

@@ -386,7 +386,6 @@ struct _Scan
 
 	GtkLabel *label_device;
 	GtkTreeView *treeview;
-	GtkTreeView *treeview_base;
 
 	Level *level;
 
@@ -405,20 +404,6 @@ G_DEFINE_TYPE ( Scan, scan, GTK_TYPE_WINDOW )
 
 static void helia_convert_dvb5 ( const char *file, Scan *scan );
 static uint8_t scan_get_dvb_delsys ( int adapter, int frontend );
-
-void scan_set_run ( GtkTreeView *treeview_base, GtkWindow *win_base, Scan *scan )
-{
-	GtkWindow *window = GTK_WINDOW ( scan );
-
-	scan->treeview_base = treeview_base;
-
-	gtk_window_set_transient_for ( window, win_base );
-
-	gtk_widget_show_all ( GTK_WIDGET ( window ) );
-
-	double opacity = gtk_widget_get_opacity ( GTK_WIDGET ( win_base ) );
-	gtk_widget_set_opacity ( GTK_WIDGET ( window ), opacity );
-}
 
 static void scan_message_dialog ( const char *f_error, const char *file_or_info, GtkMessageType mesg_type, Scan *scan )
 {
@@ -531,6 +516,9 @@ static void scan_lnb_win ( G_GNUC_UNUSED GtkButton *button, Scan *scan )
 	gtk_grid_set_row_spacing ( grid, 5 );
 	gtk_box_pack_start ( m_box, GTK_WIDGET ( grid ), TRUE, TRUE, 10 );
 
+	gtk_widget_set_visible ( GTK_WIDGET ( m_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( grid  ), TRUE );
+
 	struct data_a { const char *text; const char *name; uint value; } data_a_n[] =
 	{
 		{ "LNB LOf1   MHz", "lnb-lof1", scan_get_lnb_lhs ( element, "lnb-lof1" ) },
@@ -542,6 +530,8 @@ static void scan_lnb_win ( G_GNUC_UNUSED GtkButton *button, Scan *scan )
 	{
 		GtkLabel *label = (GtkLabel *)gtk_label_new ( data_a_n[d].text );
 		gtk_widget_set_halign ( GTK_WIDGET ( label ), GTK_ALIGN_START );
+
+		gtk_widget_set_visible ( GTK_WIDGET ( label ), TRUE );
 		gtk_grid_attach ( grid, GTK_WIDGET ( label ), 0, d, 1, 1 );
 
 		GtkSpinButton *spinbutton = (GtkSpinButton *)gtk_spin_button_new_with_range ( lnb_type_lhs_n[LNB_MNL].min_val, lnb_type_lhs_n[LNB_MNL].max_val, 1 );
@@ -549,24 +539,29 @@ static void scan_lnb_win ( G_GNUC_UNUSED GtkButton *button, Scan *scan )
 		gtk_spin_button_set_value ( spinbutton, data_a_n[d].value );
 		g_signal_connect ( spinbutton, "changed", G_CALLBACK ( scan_lnb_changed_spin_all ), element );
 
+		gtk_widget_set_visible ( GTK_WIDGET ( spinbutton ), TRUE );
 		gtk_grid_attach ( grid, GTK_WIDGET ( spinbutton ), 1, d, 1, 1 );
 	}
 
-	GtkButton *button_close = helia_create_button ( NULL, "helia-exit", "🞬", ICON_SIZE );
+	GtkButton *button_close = helia_create_button ( NULL, "helia-exit", "🞬", 16 );
+	gtk_widget_set_visible ( GTK_WIDGET ( button_close ), TRUE );
 	g_signal_connect_swapped ( button_close, "clicked", G_CALLBACK ( gtk_widget_destroy ), window );
 
 	gtk_box_pack_end ( m_box, GTK_WIDGET ( button_close ), FALSE, FALSE, 0 );
 
 	gtk_container_set_border_width ( GTK_CONTAINER ( m_box ), 10 );
 	gtk_container_add   ( GTK_CONTAINER ( window ), GTK_WIDGET ( m_box ) );
-	gtk_widget_show_all ( GTK_WIDGET ( window ) );
+
+	gtk_window_present ( window );
 }
 
 static GtkBox * scan_create_lnb_m ( GtkComboBoxText *combo, Scan *scan )
 {
 	GtkBox *h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
+	gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
 
 	GtkButton *button = (GtkButton *)gtk_button_new_with_label ( " 🤚 " );
+	gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 	g_signal_connect ( button, "clicked", G_CALLBACK ( scan_lnb_win ), scan );
 
 	gtk_box_pack_start ( h_box, GTK_WIDGET ( combo  ), TRUE, TRUE, 0 );
@@ -640,6 +635,9 @@ static GtkBox * scan_dvb_all ( uint8_t num, const DvbTypes *dvball, G_GNUC_UNUSE
 	gtk_grid_set_column_homogeneous ( grid, TRUE );
 	gtk_box_pack_start ( g_box, GTK_WIDGET ( grid ), TRUE, TRUE, 10 );
 
+	gtk_widget_set_visible ( GTK_WIDGET ( g_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( grid  ), TRUE );
+
 	GtkLabel *label;
 	GtkSpinButton *spinbutton;
 	GtkComboBoxText *scan_combo_box;
@@ -651,12 +649,16 @@ static GtkBox * scan_dvb_all ( uint8_t num, const DvbTypes *dvball, G_GNUC_UNUSE
 	{
 		label = (GtkLabel *)gtk_label_new ( dvball[d].param );
 		gtk_widget_set_halign ( GTK_WIDGET ( label ), GTK_ALIGN_START );
+
+		gtk_widget_set_visible ( GTK_WIDGET ( label ), TRUE );
 		gtk_grid_attach ( grid, GTK_WIDGET ( label ), 0, d, 1, 1 );
 
 		if ( !dvball[d].descr )
 		{
 			spinbutton = (GtkSpinButton *) gtk_spin_button_new_with_range ( dvball[d].min, dvball[d].max, 1 );
 			gtk_widget_set_name ( GTK_WIDGET ( spinbutton ), dvball[d].param );
+
+			gtk_widget_set_visible ( GTK_WIDGET ( spinbutton ), TRUE );
 			gtk_grid_attach ( grid, GTK_WIDGET ( spinbutton ), 1, d, 1, 1 );
 
 			g_signal_connect ( spinbutton, "changed", G_CALLBACK ( scan_changed_spin_all ), scan );
@@ -665,6 +667,7 @@ static GtkBox * scan_dvb_all ( uint8_t num, const DvbTypes *dvball, G_GNUC_UNUSE
 		{
 			scan_combo_box = (GtkComboBoxText *) gtk_combo_box_text_new ();
 			gtk_widget_set_name ( GTK_WIDGET ( scan_combo_box ), dvball[d].param );
+			gtk_widget_set_visible ( GTK_WIDGET ( scan_combo_box ), TRUE );
 
 			if ( g_str_has_prefix ( dvball[d].param, "LNB" ) )
 				gtk_grid_attach ( grid, GTK_WIDGET ( scan_create_lnb_m ( scan_combo_box, scan ) ), 1, d, 1, 1 );
@@ -789,12 +792,15 @@ static void scan_convert_set_file ( GtkEntry *entry, G_GNUC_UNUSED GtkEntryIconP
 static GtkBox * scan_convert ( Scan *scan )
 {
 	GtkBox *g_box  = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_VERTICAL, 0 );
+	gtk_widget_set_visible ( GTK_WIDGET ( g_box ), TRUE );
 
 	GtkLabel *label = (GtkLabel *)gtk_label_new ( "DVBv5   ⇨  GstDvbSrc" );
+	gtk_widget_set_visible ( GTK_WIDGET ( label ), TRUE );
 	gtk_box_pack_start ( g_box, GTK_WIDGET ( label ), FALSE, FALSE, 5 );
 
 	GtkEntry *entry = (GtkEntry *)gtk_entry_new ();
 	gtk_entry_set_text ( entry, "dvb_channel.conf" );
+	gtk_widget_set_visible ( GTK_WIDGET ( entry ), TRUE );
 
 	const char *icon = helia_check_icon_theme ( "helia-convert" ) ? "helia-convert" : "reload";
 
@@ -822,10 +828,13 @@ static GtkBox * scan_device ( Scan *scan )
 	GtkBox *g_box  = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_VERTICAL, 0 );
 	gtk_widget_set_margin_start ( GTK_WIDGET ( g_box ), 10 );
 	gtk_widget_set_margin_end   ( GTK_WIDGET ( g_box ), 10 );
+	gtk_widget_set_visible ( GTK_WIDGET ( g_box ), TRUE );
 
 	GtkGrid *grid = (GtkGrid *)gtk_grid_new();
 	gtk_grid_set_column_homogeneous ( grid, TRUE );
 	gtk_grid_set_row_spacing ( grid, 5 );
+
+	gtk_widget_set_visible ( GTK_WIDGET ( grid ), TRUE );
 	gtk_box_pack_start ( g_box, GTK_WIDGET ( grid ), TRUE, TRUE, 10 );
 
 	struct DataDevice { const char *text; int value; void (*f)(); } data_n[] =
@@ -840,6 +849,7 @@ static GtkBox * scan_device ( Scan *scan )
 	for ( d = 0; d < G_N_ELEMENTS ( data_n ); d++ )
 	{
 		GtkLabel *label = (GtkLabel *)gtk_label_new ( data_n[d].text );
+		gtk_widget_set_visible ( GTK_WIDGET ( label ), TRUE );
 		gtk_widget_set_halign ( GTK_WIDGET ( label ), ( d == 0 ) ? GTK_ALIGN_CENTER : GTK_ALIGN_START );
 		gtk_grid_attach ( grid, GTK_WIDGET ( label ), 0, d, ( d == 0 ) ? 2 : 1, 1 );
 
@@ -850,10 +860,12 @@ static GtkBox * scan_device ( Scan *scan )
 		gtk_spin_button_set_value ( spinbutton, data_n[d].value );
 		g_signal_connect ( spinbutton, "changed", G_CALLBACK ( data_n[d].f ), scan );
 
+		gtk_widget_set_visible ( GTK_WIDGET ( spinbutton ), TRUE );
 		gtk_grid_attach ( grid, GTK_WIDGET ( spinbutton ), 1, d, 1, 1 );
 	}
 
 	GtkComboBoxText *combo_delsys = (GtkComboBoxText *) gtk_combo_box_text_new ();
+	gtk_widget_set_visible ( GTK_WIDGET ( combo_delsys ), TRUE );
 
 	for ( c = 0; c < G_N_ELEMENTS ( dvb_descr_delsys_type_n ); c++ )
 	{
@@ -873,21 +885,6 @@ static GtkBox * scan_device ( Scan *scan )
 
 
 
-static void scan_treeview_dvb_save ( const char *ch_name, const char *ch_data, GtkTreeView *tree_view )
-{
-	GtkTreeIter iter;
-	GtkTreeModel *model = gtk_tree_view_get_model ( tree_view );
-
-	int ind = gtk_tree_model_iter_n_children ( model, NULL );
-
-	gtk_list_store_append ( GTK_LIST_STORE ( model ), &iter );
-	gtk_list_store_set    ( GTK_LIST_STORE ( model ), &iter,
-				COL_SCAN_NUM, ind + 1,
-				COL_SCAN_CHNL, ch_name,
-				COL_SCAN_DATA, ch_data,
-				-1 );
-}
-
 static void scan_save ( G_GNUC_UNUSED GtkButton *button, Scan *scan )
 {
 	GtkTreeIter iter;
@@ -902,7 +899,7 @@ static void scan_save ( G_GNUC_UNUSED GtkButton *button, Scan *scan )
 		gtk_tree_model_get ( model, &iter, COL_SCAN_DATA, &data, -1 );
 		gtk_tree_model_get ( model, &iter, COL_SCAN_CHNL, &name, -1 );
 
-			scan_treeview_dvb_save ( name, data, scan->treeview_base );
+		g_signal_emit_by_name ( scan, "scan-append", name, data );
 
 		free ( name );
 		free ( data );
@@ -914,14 +911,17 @@ static GtkBox * scan_channels ( Scan *scan )
 	GtkBox *g_box  = (GtkBox *)gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_margin_start ( GTK_WIDGET ( g_box ), 0 );
 	gtk_widget_set_margin_end   ( GTK_WIDGET ( g_box ), 0 );
+	gtk_widget_set_visible ( GTK_WIDGET ( g_box ), TRUE );
 
-	GtkScrolledWindow *scroll = (GtkScrolledWindow *)gtk_scrolled_window_new ( NULL, NULL );
-	gtk_scrolled_window_set_policy ( scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-	gtk_widget_set_size_request ( GTK_WIDGET ( scroll ), 220, -1 );
+	GtkScrolledWindow *sw = (GtkScrolledWindow *)gtk_scrolled_window_new ( NULL, NULL );
+	gtk_scrolled_window_set_policy ( sw, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+	gtk_widget_set_size_request ( GTK_WIDGET ( sw ), 220, -1 );
+	gtk_widget_set_visible ( GTK_WIDGET ( sw ), TRUE );
 
 	GtkListStore *store = (GtkListStore *)gtk_list_store_new ( 3, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING );
 
 	scan->treeview = (GtkTreeView *)gtk_tree_view_new_with_model ( GTK_TREE_MODEL ( store ) );
+	gtk_widget_set_visible ( GTK_WIDGET ( scan->treeview ), TRUE );
 
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
@@ -936,34 +936,37 @@ static GtkBox * scan_channels ( Scan *scan )
 	uint8_t c = 0; for ( c = 0; c < G_N_ELEMENTS ( column_n ); c++ )
 	{
 		renderer = gtk_cell_renderer_text_new ();
-
 		column = gtk_tree_view_column_new_with_attributes ( column_n[c].name, renderer, column_n[c].type, column_n[c].num, NULL );
+
 		if ( c == COL_SCAN_DATA ) gtk_tree_view_column_set_visible ( column, FALSE );
+
 		gtk_tree_view_append_column ( scan->treeview, column );
 	}
 
-	gtk_container_add ( GTK_CONTAINER ( scroll ), GTK_WIDGET ( scan->treeview ) );
+	gtk_container_add ( GTK_CONTAINER ( sw ), GTK_WIDGET ( scan->treeview ) );
 	g_object_unref ( G_OBJECT (store) );
 
-	gtk_box_pack_start ( g_box, GTK_WIDGET ( scroll ), TRUE, TRUE, 0 );
+	gtk_box_pack_start ( g_box, GTK_WIDGET ( sw ), TRUE, TRUE, 0 );
 
 	GtkBox *hb_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 	gtk_widget_set_margin_start ( GTK_WIDGET ( hb_box ), 5 );
 	gtk_widget_set_margin_end   ( GTK_WIDGET ( hb_box ), 5 );
 	gtk_box_set_spacing ( hb_box, 5 );
+	gtk_widget_set_visible ( GTK_WIDGET ( hb_box ), TRUE );
 
-	GtkButton *button = helia_create_button ( hb_box, "helia-clear", "🗑", ICON_SIZE );
+	GtkButton *button = helia_create_button ( hb_box, "helia-clear", "🗑", 16 );
+	gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 	g_signal_connect_swapped ( button, "clicked", G_CALLBACK ( gtk_list_store_clear ), GTK_LIST_STORE ( gtk_tree_view_get_model ( scan->treeview ) ) );
 
-	button = helia_create_button ( hb_box, "helia-save", "🖴", ICON_SIZE );
+	button = helia_create_button ( hb_box, "helia-save", "🖴", 16 );
+	gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 	g_signal_connect ( button, "clicked", G_CALLBACK ( scan_save ), scan );
 
+	gtk_widget_set_visible ( GTK_WIDGET ( g_box ), TRUE );
 	gtk_box_pack_start ( g_box, GTK_WIDGET ( hb_box ), FALSE, FALSE, 5 );
 
 	return g_box;
 }
-
-
 
 static GtkBox * scan_all_box ( uint8_t i, Scan *scan )
 {
@@ -978,8 +981,6 @@ static GtkBox * scan_all_box ( uint8_t i, Scan *scan )
 
 	return only_box;
 }
-
-
 
 static void scan_get_tp_data ( GString *gstring, Scan *scan )
 {
@@ -1201,7 +1202,7 @@ static void scan_stop ( G_GNUC_UNUSED GtkButton *button, Scan *scan )
 {
 	if ( GST_ELEMENT_CAST ( scan->dvbscan )->current_state == GST_STATE_NULL ) return;
 
-	level_set_sgn_snr ( 0, 0, FALSE, FALSE, scan->level );
+	level_update ( 0, 0, FALSE, FALSE, scan->level );
 
 	scan_read_ch_to_treeview ( scan );
 
@@ -1237,23 +1238,25 @@ static void scan_create_control_battons ( GtkBox *box, Scan *scan )
 	scan->level = level_new ();
 	gtk_widget_set_margin_start ( GTK_WIDGET ( scan->level ), 5 );
 	gtk_widget_set_margin_end   ( GTK_WIDGET ( scan->level ), 5 );
+	gtk_widget_set_visible ( GTK_WIDGET ( scan->level ), TRUE );
 	gtk_box_pack_start ( box, GTK_WIDGET ( scan->level ), FALSE, FALSE, 0 );
 
 	GtkBox *hb_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 	gtk_widget_set_margin_start ( GTK_WIDGET ( hb_box ), 5 );
 	gtk_widget_set_margin_end   ( GTK_WIDGET ( hb_box ), 5 );
 	gtk_box_set_spacing ( hb_box, 5 );
+	gtk_widget_set_visible ( GTK_WIDGET ( hb_box ), TRUE );
 
-	GtkButton *button = helia_create_button ( hb_box, "helia-play", "⏵", ICON_SIZE );
+	GtkButton *button = helia_create_button ( hb_box, "helia-play", "⏵", 16 );
 	g_signal_connect ( button, "clicked", G_CALLBACK ( scan_start ), scan );
+	gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 
-	button = helia_create_button ( hb_box, "helia-stop", "⏹", ICON_SIZE );
+	button = helia_create_button ( hb_box, "helia-stop", "⏹", 16 );
 	g_signal_connect ( button, "clicked", G_CALLBACK ( scan_stop ), scan );
+	gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 
 	gtk_box_pack_start ( box, GTK_WIDGET ( hb_box ), FALSE, FALSE, 5 );
 }
-
-
 
 static void scan_msg_all ( G_GNUC_UNUSED GstBus *bus, GstMessage *message, Scan *scan )
 {
@@ -1274,7 +1277,7 @@ static void scan_msg_all ( G_GNUC_UNUSED GstBus *bus, GstMessage *message, Scan 
 			uint8_t ret_sgl = (uint8_t)(signal*100/0xffff);
 			uint8_t ret_snr = (uint8_t)(snr*100/0xffff);
 
-			level_set_sgn_snr ( ret_sgl, ret_snr, lock, FALSE, scan->level );
+			level_update ( ret_sgl, ret_snr, lock, FALSE, scan->level );
 		}
 	}
 
@@ -1370,8 +1373,12 @@ static void scan_init ( Scan *scan )
 	GtkBox *m_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_VERTICAL,   0 );
 	GtkBox *h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 
+	gtk_widget_set_visible ( GTK_WIDGET ( m_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
+
 	GtkNotebook *notebook = (GtkNotebook *)gtk_notebook_new ();
 	gtk_notebook_set_scrollable ( notebook, TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( notebook ), TRUE );
 
 	gtk_widget_set_margin_top    ( GTK_WIDGET ( notebook ), 5 );
 	gtk_widget_set_margin_bottom ( GTK_WIDGET ( notebook ), 5 );
@@ -1383,6 +1390,7 @@ static void scan_init ( Scan *scan )
 	uint8_t j = 0; for ( j = 0; j < PAGE_NUM; j++ )
 	{
 		m_box_n[j] = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_VERTICAL, 0 );
+		gtk_widget_set_visible ( GTK_WIDGET ( m_box_n[j] ), TRUE );
 
 		gtk_box_pack_start ( m_box_n[j], GTK_WIDGET ( scan_all_box ( j, scan ) ), TRUE, TRUE, 0 );
 
@@ -1394,7 +1402,8 @@ static void scan_init ( Scan *scan )
 	gtk_notebook_set_tab_pos ( notebook, GTK_POS_TOP );
 	gtk_box_pack_start ( m_box, GTK_WIDGET (notebook), TRUE, TRUE, 0 );
 
-	GtkButton *button = helia_create_button ( NULL, "helia-exit", "🞬", ICON_SIZE );
+	GtkButton *button = helia_create_button ( NULL, "helia-exit", "🞬", 16 );
+	gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 	g_signal_connect_swapped ( button, "clicked", G_CALLBACK ( gtk_widget_destroy ), window );
 
 	gtk_box_pack_start ( h_box, GTK_WIDGET ( button ), TRUE,  TRUE,  5 );
@@ -1412,11 +1421,24 @@ static void scan_finalize ( GObject *object )
 static void scan_class_init ( ScanClass *class )
 {
 	G_OBJECT_CLASS (class)->finalize = scan_finalize;
+
+	g_signal_new ( "scan-append", G_TYPE_FROM_CLASS ( class ), G_SIGNAL_RUN_LAST,
+		0, NULL, NULL, NULL, G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING );
 }
 
-Scan * scan_new ( void )
+Scan * scan_new ( GtkWindow *win_base )
 {
-	return g_object_new ( SCAN_TYPE_WINDOW, NULL );
+	Scan *scan = g_object_new ( SCAN_TYPE_WIN, NULL );
+
+	GtkWindow *window = GTK_WINDOW ( scan );
+
+	gtk_window_set_transient_for ( window, win_base );
+	gtk_window_present ( window );
+
+	double opacity = gtk_widget_get_opacity ( GTK_WIDGET ( win_base ) );
+	gtk_widget_set_opacity ( GTK_WIDGET ( window ), opacity );
+
+	return scan;
 }
 
 
@@ -1554,7 +1576,7 @@ char * scan_get_dvb_info ( int adapter, int frontend )
 	return g_strdup ( info.name );
 }
 
-void helia_dvb_init ( int adapter, int frontend )
+void helia_init_dvb ( int adapter, int frontend )
 {
 	char path[80];
 	sprintf ( path, "/dev/dvb/adapter%d/frontend%d", adapter, frontend );
@@ -1625,7 +1647,7 @@ static void helia_read_dvb5_data ( const char *ch_data, uint num, int adapter, i
 		}
 
 		if ( g_strrstr ( gstring->str, "audio-pid" ) ) // ignore other
-			scan_treeview_dvb_save ( data[0], gstring->str, scan->treeview_base );
+			g_signal_emit_by_name ( scan, "scan-append", data[0], gstring->str );
 
 		g_string_free ( gstring, TRUE );
 	}

@@ -9,19 +9,7 @@
 
 #pragma once
 
-#include "dvb.h"
-#include "player.h"
-
 #include <gtk/gtk.h>
-
-void helia_add_dir  ( const char *, Player * );
-void helia_add_uri  ( const char *, Player * );
-void helia_add_file ( const char *, Player * );
-void helia_start_file ( GFile **, int , Player * );
-
-void helia_keyb_win ( GtkWindow * );
-
-void helia_open_net ( GtkWindow *, Player * );
 
 /* Returns a newly-allocated string holding the result. Free with free() */
 char * helia_time_to_str ( void );
@@ -40,4 +28,6 @@ GSList * helia_open_files ( const char *, GtkWindow * );
 
 /* Returns a newly-allocated string holding the result. Free with free() */
 char * helia_save_file ( const char *, const char *, const char *, const char *, GtkWindow * );
+
+void helia_message_dialog ( const char *, const char *, GtkMessageType, GtkWindow * );
 

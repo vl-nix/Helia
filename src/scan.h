@@ -12,15 +12,13 @@
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 
-#define SCAN_TYPE_WINDOW                    scan_get_type ()
+#define SCAN_TYPE_WIN                    scan_get_type ()
 
-G_DECLARE_FINAL_TYPE ( Scan, scan, SCAN, WINDOW, GtkWindow )
+G_DECLARE_FINAL_TYPE ( Scan, scan, SCAN, WIN, GtkWindow )
 
-Scan * scan_new (void);
+Scan * scan_new ( GtkWindow *win_base );
 
-void helia_dvb_init ( int , int );
-
-void scan_set_run ( GtkTreeView *, GtkWindow *, Scan * );
+void helia_init_dvb ( int, int );
 
 void set_lnb_lhs ( GstElement *, int );
 

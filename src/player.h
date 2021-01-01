@@ -12,17 +12,9 @@
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 
-#define PLAYER_TYPE_BOX                   player_get_type ()
+#define PLAYER_TYPE_OBJECT                      player_get_type ()
 
-G_DECLARE_FINAL_TYPE ( Player, player, PLAYER, BOX, GtkBox )
+G_DECLARE_FINAL_TYPE ( Player, player, PLAYER, OBJECT, GstObject )
 
-Player * player_new (void);
-
-void player_quit ( Player * );
-
-void player_run_status ( uint16_t , gboolean , Player * );
-
-void player_add_accel ( GtkApplication *, Player * );
-
-void player_treeview_append ( const char *, const char *, Player * );
+Player * player_new ( void );
 

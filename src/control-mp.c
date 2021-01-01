@@ -10,7 +10,6 @@
 #include "control-mp.h"
 #include "default.h"
 #include "button.h"
-#include "settings.h"
 
 struct _ControlMp
 {
@@ -20,58 +19,25 @@ struct _ControlMp
 
 	GtkVolumeButton *volbutton;
 
-	GstElement *element;
-
-	uint16_t opacity;
 	uint16_t icon_size;
+
+	gboolean play;
 };
 
 G_DEFINE_TYPE ( ControlMp, control_mp, GTK_TYPE_WINDOW )
 
-static void control_button_set_icon ( GtkButton *button, const char *name, uint icon_size )
-{
-	GdkPixbuf *pixbuf = gtk_icon_theme_load_icon ( gtk_icon_theme_get_default (), 
-		name, (int)icon_size, GTK_ICON_LOOKUP_USE_BUILTIN, NULL );
-
-	GtkImage *image   = (GtkImage *)gtk_image_new_from_pixbuf ( pixbuf );
-	gtk_button_set_image ( button, GTK_WIDGET ( image ) );
-
-	if ( pixbuf ) g_object_unref ( pixbuf );
-}
-
-void control_mp_set_run ( gboolean play, GstElement *element, GtkWindow *win_base, ControlMp *cmp )
-{
-	cmp->element = element;
-
-	double value = VOLUME;
-	g_object_get ( cmp->element, "volume", &value, NULL );
-	gtk_scale_button_set_value ( GTK_SCALE_BUTTON ( cmp->volbutton ), value );
-
-	GtkWindow *window = GTK_WINDOW ( cmp );
-
-	gtk_window_set_transient_for ( window, win_base );
-
-	gtk_widget_show_all ( GTK_WIDGET ( window ) );
-	gtk_widget_set_opacity ( GTK_WIDGET ( window ), ( (float)cmp->opacity / 100 ) );
-
-	gboolean icon = helia_check_icon_theme ( "helia-play" );
-
-	if ( icon )
-		control_button_set_icon ( cmp->button_pause, ( play ) ? "helia-pause" : "helia-play", cmp->icon_size );
-	else
-		gtk_button_set_label ( cmp->button_pause, ( play ) ? "⏸" : "⏵" );
-}
+static uint16_t size_icon = ICON_SIZE;
 
 static void control_mp_signal_handler_num ( GtkButton *button, ControlMp *cmp )
 {
 	const char *name = gtk_widget_get_name ( GTK_WIDGET ( button ) );
 
-	g_signal_emit_by_name ( cmp, "button-click-num", atoi ( name ) );
+	g_signal_emit_by_name ( cmp, "player-click-num", atoi ( name ) );
 }
 
 static void control_mp_volume_changed ( G_GNUC_UNUSED GtkScaleButton *button, double value, ControlMp *cmp )
 {
-	g_object_set ( cmp->element, "volume", value, NULL );
+	g_signal_emit_by_name ( cmp, "player-set-volume", value );
 }
 
 static void control_mp_clicked_stop ( G_GNUC_UNUSED GtkButton *button, ControlMp *cmp )
@@ -79,22 +45,35 @@ static void control_mp_clicked_stop ( G_GNUC_UNUSED GtkButton *button, ControlMp
 	gboolean icon = helia_check_icon_theme ( "helia-play" );
 
 	if ( icon )
-		control_button_set_icon ( cmp->button_pause, "helia-play", cmp->icon_size );
+	{
+		GtkImage *image = helia_create_image ( "helia-play", cmp->icon_size );
+		gtk_button_set_image ( cmp->button_pause, GTK_WIDGET ( image ) );
+	}
 	else
 		gtk_button_set_label ( cmp->button_pause, "⏵" );
+}
+
+static void control_button_set_pause ( ControlMp *cmp )
+{
+	gboolean icon = helia_check_icon_theme ( "helia-play" );
+
+	if ( icon )
+	{
+		GtkImage *image = helia_create_image ( ( cmp->play ) ? "helia-pause" : "helia-play", cmp->icon_size );
+		gtk_button_set_image ( cmp->button_pause, GTK_WIDGET ( image ) );
+	}
+	else
+		gtk_button_set_label ( cmp->button_pause, ( cmp->play ) ? "⏸" : "⏵" );
 }
 
 static gboolean control_mp_clicked_pause_timeout ( ControlMp *cmp )
 {
 	gboolean play = FALSE;
-	if ( GST_ELEMENT_CAST ( cmp->element )->current_state == GST_STATE_PLAYING ) play = TRUE;
+	g_signal_emit_by_name ( cmp, "cmp-player-is-play", TRUE, &play );
 
-	gboolean icon = helia_check_icon_theme ( "helia-play" );
+	cmp->play = play; // !cmp->play;
 
-	if ( icon )
-		control_button_set_icon ( cmp->button_pause, ( play ) ? "helia-pause" : "helia-play", cmp->icon_size );
-	else
-		gtk_button_set_label ( cmp->button_pause, ( play ) ? "⏸" : "⏵" );
+	control_button_set_pause ( cmp );
 
 	return FALSE;
 }
@@ -106,12 +85,7 @@ static void control_mp_clicked_pause ( G_GNUC_UNUSED GtkButton *button, ControlM
 
 static void control_mp_init ( ControlMp *cmp )
 {
-	cmp->opacity = OPACITY;
-	cmp->icon_size = ICON_SIZE;
-
-	GSettings *setting = settings_init ();
-	if ( setting ) cmp->opacity   = (uint16_t)g_settings_get_uint ( setting, "opacity-panel" );
-	if ( setting ) cmp->icon_size = (uint16_t)g_settings_get_uint ( setting, "icon-size" );
+	cmp->icon_size = size_icon;
 
 	GtkWindow *window = GTK_WINDOW ( cmp );
 
@@ -133,6 +107,7 @@ static void control_mp_init ( ControlMp *cmp )
 
 	GtkBox *h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 	gtk_box_set_spacing ( h_box, 5 );
+	gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
 
 	uint8_t BN = 5;
 
@@ -143,6 +118,7 @@ static void control_mp_init ( ControlMp *cmp )
 	uint8_t c = 0; for ( c = 0; c < BN; c++ )
 	{
 		GtkButton *button = helia_create_button ( h_box, name_icons_a[c], icons_a[c], cmp->icon_size );
+		gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 
 		char name[20];
 		sprintf ( name, "%u", c );
@@ -156,6 +132,7 @@ static void control_mp_init ( ControlMp *cmp )
 
 	h_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 	gtk_box_set_spacing ( h_box, 5 );
+	gtk_widget_set_visible ( GTK_WIDGET ( h_box ), TRUE );
 
 	const char *icons_b[] = { "⏵", "⏹", "⏺", "⏼", "🞬" };
 	const char *name_icons_b[] = { "helia-play", "helia-stop", "helia-record", "helia-info", "helia-exit" };
@@ -165,6 +142,7 @@ static void control_mp_init ( ControlMp *cmp )
 	{
 		GtkButton *button = helia_create_button ( h_box, name_icons_b[c], icons_b[c], cmp->icon_size );
 		if ( c == 0 ) cmp->button_pause = button;
+		gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
 
 		char name[20];
 		sprintf ( name, "%u", c + BN );
@@ -192,7 +170,10 @@ static void control_mp_init ( ControlMp *cmp )
 	gtk_container_set_border_width ( GTK_CONTAINER ( m_box ), 10 );
 	gtk_container_add ( GTK_CONTAINER ( window ), GTK_WIDGET ( m_box ) );
 
-	if ( setting ) g_object_unref ( setting );
+	gtk_widget_set_visible ( GTK_WIDGET ( m_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( b_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( v_box ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( cmp->volbutton ), TRUE );
 }
 
 static void control_mp_finalize ( GObject *object )
@@ -202,13 +183,37 @@ static void control_mp_finalize ( GObject *object )
 
 static void control_mp_class_init ( ControlMpClass *class )
 {
-	G_OBJECT_CLASS (class)->finalize = control_mp_finalize;
+	GObjectClass *oclass = G_OBJECT_CLASS (class);
 
-	g_signal_new ( "button-click-num", G_TYPE_FROM_CLASS ( class ), G_SIGNAL_RUN_FIRST,
-		0, NULL, NULL, g_cclosure_marshal_VOID__STRING, G_TYPE_NONE, 1, G_TYPE_UINT );
+	oclass->finalize = control_mp_finalize;
+
+	g_signal_new ( "player-click-num", G_TYPE_FROM_CLASS ( class ), G_SIGNAL_RUN_LAST,
+		0, NULL, NULL, NULL, G_TYPE_NONE, 1, G_TYPE_UINT );
+
+	g_signal_new ( "player-set-volume", G_TYPE_FROM_CLASS ( class ), G_SIGNAL_RUN_LAST,
+		0, NULL, NULL, NULL, G_TYPE_NONE, 1, G_TYPE_DOUBLE );
+
+	g_signal_new ( "cmp-player-is-play", G_TYPE_FROM_CLASS ( class ), G_SIGNAL_RUN_LAST,
+		0, NULL, NULL, NULL, G_TYPE_BOOLEAN, 1, G_TYPE_BOOLEAN );
 }
 
-ControlMp * control_mp_new ( void )
+ControlMp * control_mp_new ( uint16_t opacity, uint16_t icon_size, double volume, gboolean play, GtkWindow *win_base )
 {
-	return g_object_new ( CONTROLMP_TYPE_WINDOW, NULL );
+	size_icon = icon_size;
+
+	ControlMp *cmp = g_object_new ( CONTROL_TYPE_MP, NULL );
+
+	GtkWindow *window = GTK_WINDOW ( cmp );
+
+	gtk_window_set_transient_for ( window, win_base );
+	gtk_window_present ( window );
+
+	cmp->play = play;
+	control_button_set_pause ( cmp );
+
+	gtk_widget_set_opacity ( GTK_WIDGET ( window ), ( (float)opacity / 100 ) );
+
+	gtk_scale_button_set_value ( GTK_SCALE_BUTTON ( cmp->volbutton ), volume );
+
+	return cmp;
 }
