@@ -732,6 +732,8 @@ static void player_scroll_new_pos ( gint64 set_pos, gboolean up_dwn, Player *pla
 		if ( !up_dwn ) new_pos = ( current > skip ) ? ( current - skip ) : 0;
 
 		gst_element_seek_simple ( player->playbin, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT, new_pos );
+
+		g_signal_emit_by_name ( player, "player-slider", new_pos, 8, duration, 10, TRUE );
 	}
 }
 
@@ -969,6 +971,12 @@ static void player_set_property ( GObject *object, uint id, const GValue *value,
 static void player_finalize ( GObject *object )
 {
 	Player *player = PLAYER_OBJECT ( object );
+
+	gst_object_unref ( player->enc_audio );
+	gst_object_unref ( player->enc_video );
+	gst_object_unref ( player->enc_muxer );
+
+	gst_object_unref ( player->playbin );
 
 	free ( player->rec_in_out[0] );
 	free ( player->rec_in_out[1] );

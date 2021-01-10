@@ -1132,6 +1132,16 @@ static void dvb_set_property ( GObject *object, uint id, const GValue *value, GP
 
 static void dvb_finalize ( GObject *object )
 {
+	Dvb *dvb = DVB_OBJECT ( object );
+
+	gst_object_unref ( dvb->enc_audio );
+	gst_object_unref ( dvb->enc_video );
+	gst_object_unref ( dvb->enc_muxer );
+
+	gst_object_unref ( dvb->playdvb );
+
+	free ( dvb->data );
+
 	G_OBJECT_CLASS (dvb_parent_class)->finalize (object);
 }
 

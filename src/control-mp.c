@@ -19,6 +19,7 @@ struct _ControlMp
 
 	GtkVolumeButton *volbutton;
 
+	uint src_time;
 	uint16_t icon_size;
 
 	gboolean play;
@@ -68,6 +69,8 @@ static void control_button_set_pause ( ControlMp *cmp )
 
 static gboolean control_mp_clicked_pause_timeout ( ControlMp *cmp )
 {
+	cmp->src_time = 0;
+
 	gboolean play = FALSE;
 	g_signal_emit_by_name ( cmp, "cmp-player-is-play", TRUE, &play );
 
@@ -80,11 +83,17 @@ static gboolean control_mp_clicked_pause_timeout ( ControlMp *cmp )
 
 static void control_mp_clicked_pause ( G_GNUC_UNUSED GtkButton *button, ControlMp *cmp )
 {
-	g_timeout_add ( 1000, (GSourceFunc)control_mp_clicked_pause_timeout, cmp );
+	cmp->src_time = g_timeout_add ( 1000, (GSourceFunc)control_mp_clicked_pause_timeout, cmp );
+}
+
+static void control_mp_quit ( G_GNUC_UNUSED GtkWindow *win, ControlMp *cmp )
+{
+	if ( cmp->src_time ) g_source_remove ( cmp->src_time );
 }
 
 static void control_mp_init ( ControlMp *cmp )
 {
+	cmp->src_time = 0;
 	cmp->icon_size = size_icon;
 
 	GtkWindow *window = GTK_WINDOW ( cmp );
@@ -95,6 +104,7 @@ static void control_mp_init ( ControlMp *cmp )
 	gtk_window_set_icon_name ( window, DEF_ICON );
 	gtk_window_set_position  ( window, GTK_WIN_POS_CENTER_ON_PARENT );
 	gtk_window_set_default_size ( window, 400, -1 );
+	g_signal_connect ( window, "destroy", G_CALLBACK ( control_mp_quit ), cmp );
 
 	GtkBox *m_box = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_VERTICAL, 0 );
 	gtk_box_set_spacing ( m_box, 5 );

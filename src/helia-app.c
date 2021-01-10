@@ -54,5 +54,5 @@ static void helia_app_class_init ( HeliaAppClass *class )
 
 HeliaApp * helia_app_new ( void )
 {
-	return g_object_new ( HELIA_TYPE_APP, /*"application-id", "org.gnome.helia",*/ "flags", G_APPLICATION_HANDLES_OPEN, NULL );
+	return g_object_new ( HELIA_TYPE_APP, /*"application-id", "org.gnome.helia",*/ "flags", G_APPLICATION_HANDLES_OPEN | G_APPLICATION_NON_UNIQUE, NULL );
 }

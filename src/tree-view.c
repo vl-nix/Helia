@@ -186,8 +186,32 @@ static void tree_view_add_m3u ( const char *file, GtkTreeView *treeview )
 	}
 }
 
+static int _sort_func_list ( gconstpointer a, gconstpointer b )
+{
+	return g_utf8_collate ( a, b );
+}
+
+static void tree_view_slist_sort ( GList *list, GtkTreeView *treeview )
+{
+	GList *list_sort = g_list_sort ( list, _sort_func_list );
+
+	while ( list_sort != NULL )
+	{
+		char *data = (char *)list_sort->data;
+		char *name = g_path_get_basename ( data );
+
+		tree_view_append ( name, data, treeview );
+
+		list_sort = list_sort->next;
+		free ( name );
+	}
+
+	g_list_free_full ( list_sort, (GDestroyNotify) g_free );
+}
+
 static void tree_view_add_dir ( const char *dir_path, GtkTreeView *treeview )
 {
+	GList *list = NULL;
 	GDir *dir = g_dir_open ( dir_path, 0, NULL );
 
 	if ( dir )
@@ -209,7 +233,8 @@ static void tree_view_add_dir ( const char *dir_path, GtkTreeView *treeview )
 				else
 				{
 					if ( tree_view_media_filter ( path_name, FALSE ) )
-						tree_view_append ( name, path_name, treeview );
+						list = g_list_append ( list, g_strdup ( path_name ) );
+						// tree_view_append ( name, path_name, treeview );
 				}
 			}
 
@@ -222,6 +247,10 @@ static void tree_view_add_dir ( const char *dir_path, GtkTreeView *treeview )
 	{
 		g_critical ( "%s: opening directory %s failed.", __func__, dir_path );
 	}
+
+	tree_view_slist_sort ( list, treeview );
+
+	g_list_free_full ( list, (GDestroyNotify) g_free );
 }
 
 static void tree_view_add_files ( const char *file, GtkTreeView *treeview )
@@ -448,20 +477,28 @@ static char * treeview_handler_next ( TreeView *treeview, const char *uri, uint 
 				break_f = TRUE;
 			}
 		}
-		else if ( g_strrstr ( uri, data ) )
+		else
 		{
-			if ( gtk_tree_model_iter_next ( model, &iter ) )
+			char *next = helia_uri_get_path ( uri );
+
+			if ( g_strrstr ( next, data ) )
 			{
-				char *data2 = NULL;
-				gtk_tree_model_get ( model, &iter, COL_DATA, &data2, -1 );
+				if ( gtk_tree_model_iter_next ( model, &iter ) )
+				{
+					char *data2 = NULL;
+					gtk_tree_model_get ( model, &iter, COL_DATA, &data2, -1 );
 
-				path = g_strdup ( data2 );
+					path = g_strdup ( data2 );
 
-				gtk_tree_selection_select_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( treeview ) ), &iter );
-				free ( data2 );
+					gtk_tree_selection_select_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( treeview ) ), &iter );
+					free ( data2 );
+
+				}
+
+				break_f = TRUE;
 			}
 
-			break_f = TRUE;
+			free ( next );
 		}
 
 		count++;

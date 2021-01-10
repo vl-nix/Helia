@@ -179,17 +179,30 @@ static void helia_win_changed_theme ( GtkFileChooserButton *button, HeliaWin *wi
 	if ( win->setting ) g_settings_set_string ( win->setting, "theme", name );
 }
 
-static GtkFileChooserButton * win_create_chooser_button ( const char *title, const char *path, void ( *f )( GtkFileChooserButton *, HeliaWin * ), HeliaWin *win )
+static GtkBox * win_create_chooser_button ( const char *title, const char *icon, const char *path, void ( *f )( GtkFileChooserButton *, HeliaWin * ), HeliaWin *win )
 {
+	GtkBox *hbox = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
+	gtk_box_set_spacing ( hbox, 3 );
+	gtk_widget_set_visible ( GTK_WIDGET ( hbox    ), TRUE );
+
 	GtkFileChooserButton *button = (GtkFileChooserButton *)gtk_file_chooser_button_new ( title, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER );
 	gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER ( button ), path );
 	g_signal_connect ( button, "file-set", G_CALLBACK ( f ), win );
+	gtk_widget_set_visible ( GTK_WIDGET ( button  ), TRUE );
 
-	gtk_widget_set_tooltip_text ( GTK_WIDGET ( button ), title );
+	if ( icon )
+	{
+		GtkButton *b_image = helia_create_button ( NULL, icon, "⎈", 16 );
+		gtk_widget_set_visible ( GTK_WIDGET ( b_image ), TRUE );
 
-	gtk_widget_set_visible ( GTK_WIDGET ( button ), TRUE );
+		gtk_box_pack_start ( hbox, GTK_WIDGET ( b_image ), FALSE, FALSE, 0 );
+	}
+	else
+		gtk_widget_set_tooltip_text ( GTK_WIDGET ( button ), title );
 
-	return button;
+	gtk_box_pack_start ( hbox, GTK_WIDGET ( button  ), TRUE, TRUE, 0 );
+
+	return hbox;
 }
 
 static void helia_win_spinbutton_changed_opacity ( GtkSpinButton *button, HeliaWin *win )
@@ -215,18 +228,34 @@ static void helia_win_spinbutton_changed_icon_size ( GtkSpinButton *button, Heli
 	if ( win->setting ) g_settings_set_uint ( win->setting, "icon-size", icon_size );
 }
 
-static GtkSpinButton * helia_win_create_spinbutton ( uint val, uint8_t min, uint32_t max, uint8_t step, const char *text, void ( *f )( GtkSpinButton *, HeliaWin * ), HeliaWin *win )
+static GtkBox * helia_win_create_spinbutton ( uint val, uint8_t min, uint32_t max, uint8_t step, const char *text, const char *icon, void ( *f )( GtkSpinButton *, HeliaWin * ), HeliaWin *win )
 {
+	GtkBox *hbox = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
+	gtk_box_set_spacing ( hbox, 3 );
+	gtk_widget_set_visible ( GTK_WIDGET ( hbox    ), TRUE );
+
 	GtkSpinButton *spinbutton = (GtkSpinButton *)gtk_spin_button_new_with_range ( min, max, step );
 	gtk_spin_button_set_value ( spinbutton, val );
 	g_signal_connect ( spinbutton, "changed", G_CALLBACK ( f ), win );
 
-	gtk_entry_set_icon_from_icon_name ( GTK_ENTRY ( spinbutton ), GTK_ENTRY_ICON_PRIMARY, "info" );
-	gtk_entry_set_icon_tooltip_text   ( GTK_ENTRY ( spinbutton ), GTK_ENTRY_ICON_PRIMARY, text );
-
 	gtk_widget_set_visible ( GTK_WIDGET ( spinbutton ), TRUE );
 
-	return spinbutton;
+	if ( icon )
+	{
+		GtkButton *b_image = helia_create_button ( NULL, icon, "⎈", 16 );
+		gtk_widget_set_visible ( GTK_WIDGET ( b_image ), TRUE );
+
+		gtk_box_pack_start ( hbox, GTK_WIDGET ( b_image ), FALSE, FALSE, 0 );
+	}
+	else
+	{
+		gtk_entry_set_icon_from_icon_name ( GTK_ENTRY ( spinbutton ), GTK_ENTRY_ICON_PRIMARY, "info" );
+		gtk_entry_set_icon_tooltip_text   ( GTK_ENTRY ( spinbutton ), GTK_ENTRY_ICON_PRIMARY, text );
+	}
+
+	gtk_box_pack_start ( hbox, GTK_WIDGET ( spinbutton  ), TRUE, TRUE, 0 );
+
+	return hbox;
 }
 
 static void helia_win_clicked_dark ( G_GNUC_UNUSED GtkButton *button, G_GNUC_UNUSED HeliaWin *win )
@@ -265,7 +294,7 @@ static GtkPopover * helia_win_popover_pref ( HeliaWin *win )
 	GtkPopover *popover = (GtkPopover *)gtk_popover_new ( NULL );
 
 	GtkBox *vbox = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_VERTICAL, 5 );
-	gtk_box_set_spacing ( vbox, 5 );
+	gtk_box_set_spacing ( vbox, 3 );
 	gtk_widget_set_visible ( GTK_WIDGET ( vbox ), TRUE );
 
 	uint opacity_w = 100;
@@ -280,15 +309,15 @@ static GtkPopover * helia_win_popover_pref ( HeliaWin *win )
 	if ( win->setting ) rec_dir = g_settings_get_string ( win->setting, "rec-dir" );
 	if ( rec_dir && g_str_has_prefix ( rec_dir, "none" ) ) { free ( rec_dir ); rec_dir = NULL; }
 
-	gtk_box_pack_start ( vbox, GTK_WIDGET ( helia_win_create_spinbutton ( opacity_p, 40, 100, 1, "Opacity-Panel",  helia_win_spinbutton_changed_opacity,     win ) ), FALSE, FALSE, 0 );
-	gtk_box_pack_start ( vbox, GTK_WIDGET ( helia_win_create_spinbutton ( opacity_w, 40, 100, 1, "Opacity-Window", helia_win_spinbutton_changed_opacity_win, win ) ), FALSE, FALSE, 0 );
-	gtk_box_pack_start ( vbox, GTK_WIDGET ( helia_win_create_spinbutton ( icon_size, 8, 1024, 1, "Icon-size",      helia_win_spinbutton_changed_icon_size,   win ) ), FALSE, FALSE, 0 );
+	gtk_box_pack_start ( vbox, GTK_WIDGET ( helia_win_create_spinbutton ( icon_size, 8,   48, 1, "Icon-size",      "helia-panel",  helia_win_spinbutton_changed_icon_size,   win ) ), FALSE, FALSE, 0 );
+	gtk_box_pack_start ( vbox, GTK_WIDGET ( helia_win_create_spinbutton ( opacity_p, 40, 100, 1, "Opacity-Panel",  "helia-panel",  helia_win_spinbutton_changed_opacity,     win ) ), FALSE, FALSE, 0 );
+	gtk_box_pack_start ( vbox, GTK_WIDGET ( helia_win_create_spinbutton ( opacity_w, 40, 100, 1, "Opacity-Window", "helia-window", helia_win_spinbutton_changed_opacity_win, win ) ), FALSE, FALSE, 0 );
 
-	gtk_box_pack_start ( vbox, GTK_WIDGET ( win_create_chooser_button ( "Record", ( rec_dir ) ? rec_dir : g_get_home_dir (), helia_win_changed_rec , win ) ), FALSE, FALSE, 0 );
-	gtk_box_pack_start ( vbox, GTK_WIDGET ( win_create_chooser_button ( "Theme",  "/usr/share/themes/", helia_win_changed_theme, win ) ), FALSE, FALSE, 0 );
+	gtk_box_pack_start ( vbox, GTK_WIDGET ( win_create_chooser_button ( "Record", "helia-record", ( rec_dir ) ? rec_dir : g_get_home_dir (), helia_win_changed_rec , win ) ), FALSE, FALSE, 0 );
+	gtk_box_pack_start ( vbox, GTK_WIDGET ( win_create_chooser_button ( "Theme",  "helia-theme",  "/usr/share/themes/", helia_win_changed_theme, win ) ), FALSE, FALSE, 0 );
 
 	GtkBox *hbox = (GtkBox *)gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
-	gtk_box_set_spacing ( hbox, 5 );
+	gtk_box_set_spacing ( hbox, 3 );
 	gtk_widget_set_visible ( GTK_WIDGET ( hbox ), TRUE );
 
 	gtk_box_pack_start ( hbox, GTK_WIDGET ( win_create_button ( "helia-dark",  "⏾", helia_win_clicked_dark,  win ) ), TRUE, TRUE, 0 );
@@ -541,9 +570,9 @@ static void helia_win_class_init ( HeliaWinClass *class )
 
 static void helia_win_start ( GFile **files, int n_files, HeliaWin *win )
 {
-	g_autofree char *fl_ch = g_file_get_basename ( files[0] );
+	g_autofree char *arg_ch = g_file_get_basename ( files[0] );
 
-	if ( g_str_has_prefix ( fl_ch, "channel" ) )
+	if ( arg_ch && g_str_has_suffix ( arg_ch, "channel" ) )
 	{
 		g_autofree char *ch = NULL;
 		if ( n_files == 2 ) ch = g_file_get_basename ( files[1] );
@@ -553,8 +582,13 @@ static void helia_win_start ( GFile **files, int n_files, HeliaWin *win )
 	}
 	else
 	{
-		helia_window_set_win_mp ( NULL, win );
-		helia_player_start ( files, n_files, win->player );
+		g_autofree char *path = g_file_get_path ( files[0] );
+
+		if ( path && g_file_test ( path, G_FILE_TEST_EXISTS ) )
+		{
+			helia_window_set_win_mp ( NULL, win );
+			helia_player_start ( files, n_files, win->player );
+		}
 	}
 }
 
