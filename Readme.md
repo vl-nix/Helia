@@ -7,6 +7,7 @@
 * Digital TV
   * Record ( Original / Encoding )
   * Scan: DVB, DTMB ( DVB-T/T2, DVB-S/S2, DVB-C )
+  * Drag and Drop: gtv-channel.conf
 
 #### Channels ( scan initial file )
 
