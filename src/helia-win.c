@@ -55,7 +55,7 @@ static uint helia_power_manager_inhibit ( GDBusConnection *connect )
 	uint cookie;
 	GError *err = NULL;
 
-	GVariant *reply = g_dbus_connection_call_sync ( connect, "org.freedesktop.PowerManagement", "/org/freedesktop/PowerManagement/Inhibit", 
+	GVariant *reply = g_dbus_connection_call_sync ( connect, "org.freedesktop.PowerManagement", "/org/freedesktop/PowerManagement/Inhibit",
 		"org.freedesktop.PowerManagement.Inhibit", "Inhibit", g_variant_new ("(ss)", "Helia", "Video" ), G_VARIANT_TYPE ("(u)"), G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err );
 
 	if ( reply != NULL )
@@ -79,7 +79,7 @@ static void helia_power_manager_uninhibit ( GDBusConnection *connect, uint cooki
 {
 	GError *err = NULL;
 
-	GVariant *reply = g_dbus_connection_call_sync ( connect, "org.freedesktop.PowerManagement", "/org/freedesktop/PowerManagement/Inhibit", 
+	GVariant *reply = g_dbus_connection_call_sync ( connect, "org.freedesktop.PowerManagement", "/org/freedesktop/PowerManagement/Inhibit",
 		"org.freedesktop.PowerManagement.Inhibit", "UnInhibit", g_variant_new ("(u)", cookie), NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err );
 
 	if ( err )
@@ -592,9 +592,29 @@ static void helia_win_start ( GFile **files, int n_files, HeliaWin *win )
 	}
 }
 
+static void helia_action_dir ( G_GNUC_UNUSED GSimpleAction *sl, G_GNUC_UNUSED GVariant *pm, gpointer data )
+{
+	HeliaWin *win = data;
+
+	if ( !gtk_widget_get_visible ( GTK_WIDGET ( win->mp_vbox ) ) ) return;
+
+	player_action_accels ( OPEN_DIR, win->player );
+}
+
+static void helia_action_files ( G_GNUC_UNUSED GSimpleAction *sl, G_GNUC_UNUSED GVariant *pm, gpointer data )
+{
+	HeliaWin *win = data;
+
+	if ( !gtk_widget_get_visible ( GTK_WIDGET ( win->mp_vbox ) ) ) return;
+
+	player_action_accels ( OPEN_FILES, win->player );
+}
+
 static void helia_action_frame ( G_GNUC_UNUSED GSimpleAction *sl, G_GNUC_UNUSED GVariant *pm, gpointer data )
 {
 	HeliaWin *win = data;
+
+	if ( !gtk_widget_get_visible ( GTK_WIDGET ( win->mp_vbox ) ) ) return;
 
 	player_action_accels ( FRAME, win->player );
 }
@@ -603,7 +623,18 @@ static void helia_action_pause ( G_GNUC_UNUSED GSimpleAction *sl, G_GNUC_UNUSED 
 {
 	HeliaWin *win = data;
 
+	if ( !gtk_widget_get_visible ( GTK_WIDGET ( win->mp_vbox ) ) ) return;
+
 	player_action_accels ( PAUSE, win->player );
+}
+
+static void helia_action_slider ( G_GNUC_UNUSED GSimpleAction *sl, G_GNUC_UNUSED GVariant *pm, gpointer data )
+{
+	HeliaWin *win = data;
+
+	if ( !gtk_widget_get_visible ( GTK_WIDGET ( win->mp_vbox ) ) ) return;
+
+	player_action_accels ( SLIDER, win->player );
 }
 
 static void _app_add_accelerator ( const char *func_name, uint mod_key, uint gdk_key, GtkApplication *app )
@@ -617,24 +648,41 @@ static void _app_add_accelerator ( const char *func_name, uint mod_key, uint gdk
 	gtk_application_set_accels_for_action ( app, text, accel_str );
 }
 
+typedef struct _FuncAction FuncAction;
+
+struct _FuncAction
+{
+	void (*f)();
+	const char *func_name;
+
+	uint mod_key;
+	uint gdk_key;
+};
+
 static void helia_app_action ( HeliaApp *_app, HeliaWin *win )
 {
 	GtkApplication *app = GTK_APPLICATION ( _app );
 
-	GActionEntry entries[2];
+	static FuncAction func_action_n[] =
+        {
+                { helia_action_dir,    "open-dir",    GDK_CONTROL_MASK, GDK_KEY_D },
+                { helia_action_files,  "open-files",  GDK_CONTROL_MASK, GDK_KEY_O },
+                { helia_action_pause,  "paused",      0, GDK_KEY_space  },
+                { helia_action_frame,  "frame",       0, GDK_KEY_period },
+                { helia_action_slider, "slider",      GDK_CONTROL_MASK, GDK_KEY_Z }
+        };
 
-	entries[0].name           = "pause";
-	entries[0].activate       = helia_action_pause;
-	entries[0].parameter_type = NULL;
-	entries[0].state          = NULL;
+        GActionEntry entries[ G_N_ELEMENTS ( func_action_n ) ];
 
-	entries[1].name           = "frame";
-	entries[1].activate       = helia_action_frame;
-	entries[1].parameter_type = NULL;
-	entries[1].state          = NULL;
+	uint8_t i = 0; for ( i = 0; i < G_N_ELEMENTS ( func_action_n ); i++ )
+	{
+		entries[i].name           = func_action_n[i].func_name;
+		entries[i].activate       = func_action_n[i].f;
+		entries[i].parameter_type = NULL;
+		entries[i].state          = NULL;
 
-	_app_add_accelerator ( "pause", 0, GDK_KEY_space,  app );
-	_app_add_accelerator ( "frame", 0, GDK_KEY_period, app );
+		_app_add_accelerator ( func_action_n[i].func_name, func_action_n[i].mod_key, func_action_n[i].gdk_key, app );
+	}
 
 	g_action_map_add_action_entries ( G_ACTION_MAP ( app ), entries, G_N_ELEMENTS ( entries ), win );
 }

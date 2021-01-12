@@ -15,7 +15,10 @@
 enum player_accel
 {
 	PAUSE,
-	FRAME
+	FRAME,
+	SLIDER,
+	OPEN_DIR,
+	OPEN_FILES
 };
 
 #define HELIA_TYPE_PLAYER                        helia_player_get_type ()

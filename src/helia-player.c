@@ -287,8 +287,8 @@ static void player_set_info ( HeliaPlayer *player )
 
 static void helia_player_clicked_handler_cmp ( G_GNUC_UNUSED ControlMp *cmp, uint8_t num, HeliaPlayer *player )
 {
-	fp funcs[] = { player_set_base,  player_set_playlist, player_set_eqa, player_set_eqv,  player_set_mute, 
-		       player_set_pause, player_set_stop,     player_set_rec, player_set_info, NULL };
+	fp funcs[] = { player_set_base,  player_set_playlist, player_set_eqa, player_set_eqv,  player_set_mute,
+		player_set_pause, player_set_stop,     player_set_rec, player_set_info, NULL };
 
 	if ( funcs[num] ) funcs[num] ( player );
 }
@@ -426,11 +426,19 @@ static GtkPaned * helia_player_create_paned ( GtkBox *playlist, GtkDrawingArea *
 	return paned;
 }
 
-static void player_video_drag_in ( G_GNUC_UNUSED GtkDrawingArea *draw, GdkDragContext *ct, G_GNUC_UNUSED int x, G_GNUC_UNUSED int y, 
-	GtkSelectionData *s_data, G_GNUC_UNUSED uint info, guint32 time, HeliaPlayer *player )
+static uint helia_player_get_model_iter_n ( HeliaPlayer *player )
 {
 	GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW ( player->treeview ) );
+
 	int indx = gtk_tree_model_iter_n_children ( model, NULL );
+
+	return (uint)indx;
+}
+
+static void helia_player_video_drag_in ( G_GNUC_UNUSED GtkDrawingArea *draw, GdkDragContext *ct, G_GNUC_UNUSED int x, G_GNUC_UNUSED int y,
+	GtkSelectionData *s_data, G_GNUC_UNUSED uint info, guint32 time, HeliaPlayer *player )
+{
+	uint indx = helia_player_get_model_iter_n ( player );
 
 	char **uris = gtk_selection_data_get_uris ( s_data );
 
@@ -446,7 +454,7 @@ static void player_video_drag_in ( G_GNUC_UNUSED GtkDrawingArea *draw, GdkDragCo
 	g_strfreev ( uris );
 	gtk_drag_finish ( ct, TRUE, FALSE, time );
 
-	player_first_play ( (uint)indx, player );
+	player_first_play ( indx, player );
 }
 
 static void helia_player_show_cursor ( GtkDrawingArea *draw, gboolean show_cursor )
@@ -469,7 +477,7 @@ static gboolean helia_player_video_notify_event ( GtkDrawingArea *draw, G_GNUC_U
 	return GDK_EVENT_STOP;
 }
 
-static void player_video_hide_cursor ( HeliaPlayer *player )
+static void helia_player_video_hide_cursor ( HeliaPlayer *player )
 {
 	time_t t_cur;
 	time ( &t_cur );
@@ -490,7 +498,7 @@ static void helia_player_handler_staus ( G_GNUC_UNUSED Player *p, const char *bu
 
 static void helia_player_handler_slider ( G_GNUC_UNUSED Player *p, gint64 pos, uint d_pos, gint64 dur, uint d_dur, gboolean sensitive, HeliaPlayer *player )
 {
-	player_video_hide_cursor ( player );
+	helia_player_video_hide_cursor ( player );
 
 	slider_update ( pos, d_pos, dur, d_dur, sensitive, player->level );
 }
@@ -524,10 +532,59 @@ static void helia_player_handler_power ( G_GNUC_UNUSED Player *p, gboolean power
 	g_signal_emit_by_name ( player, "power-set", power );
 }
 
+static void helia_player_open_dir ( HeliaPlayer *player )
+{
+        GtkWindow *window = GTK_WINDOW ( gtk_widget_get_toplevel ( GTK_WIDGET ( player->video ) ) );
+
+	g_autofree char *path = helia_open_dir ( g_get_home_dir (), window );
+
+	if ( path == NULL ) return;
+
+	uint indx = helia_player_get_model_iter_n ( player );
+
+	g_signal_emit_by_name ( player->treeview, "treeview-add-files", path );
+
+	player_first_play ( indx, player );
+}
+
+static void helia_player_open_files ( HeliaPlayer *player )
+{
+        GtkWindow *window = GTK_WINDOW ( gtk_widget_get_toplevel ( GTK_WIDGET ( player->video ) ) );
+
+	GSList *files = helia_open_files ( g_get_home_dir (), window );
+
+	if ( files == NULL ) return;
+
+	uint indx = helia_player_get_model_iter_n ( player );
+
+	while ( files != NULL )
+	{
+                char *path = (char *)files->data;
+		g_signal_emit_by_name ( player->treeview, "treeview-add-files", path );
+
+                files = files->next;
+	}
+
+	g_slist_free_full ( files, (GDestroyNotify) g_free );
+
+	player_first_play ( indx, player );
+}
+
+static void helia_player_set_slider ( HeliaPlayer *player )
+{
+	gboolean vis = gtk_widget_get_visible ( GTK_WIDGET ( player->level ) );
+	gtk_widget_set_visible ( GTK_WIDGET ( player->level ), !vis );
+}
+
 void player_action_accels ( enum player_accel num, HeliaPlayer *player )
 {
-	if ( num == PAUSE ) g_signal_emit_by_name ( player->player, "player-pause" );
-	if ( num == FRAME ) g_signal_emit_by_name ( player->player, "player-frame" );
+	if ( num == OPEN_DIR   ) helia_player_open_dir   ( player );
+	if ( num == OPEN_FILES ) helia_player_open_files ( player );
+
+	if ( num == SLIDER ) helia_player_set_slider ( player );
+
+	if ( num == PAUSE  ) g_signal_emit_by_name ( player->player, "player-pause" );
+	if ( num == FRAME  ) g_signal_emit_by_name ( player->player, "player-frame" );
 }
 
 static void helia_player_init ( HeliaPlayer *player )
@@ -570,7 +627,7 @@ static void helia_player_init ( HeliaPlayer *player )
 
 	gtk_drag_dest_set ( GTK_WIDGET ( player->video ), GTK_DEST_DEFAULT_ALL, NULL, 0, GDK_ACTION_COPY );
 	gtk_drag_dest_add_uri_targets  ( GTK_WIDGET ( player->video ) );
-	g_signal_connect  ( player->video, "drag-data-received", G_CALLBACK ( player_video_drag_in ), player );
+	g_signal_connect  ( player->video, "drag-data-received", G_CALLBACK ( helia_player_video_drag_in ), player );
 }
 
 static void helia_player_destroy ( GtkWidget *object )
