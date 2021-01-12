@@ -60,7 +60,7 @@ static void helia_dvb_treeview_scan_handler ( G_GNUC_UNUSED TreeView *treeview, 
 
 	Scan *scan = scan_new ( win_base );
 	g_signal_connect ( scan, "scan-append", G_CALLBACK ( helia_dvb_treeview_scan_append_handler ), dvb );
-	
+
 }
 static void helia_dvb_treeview_close_handler ( G_GNUC_UNUSED TreeView *treeview, HeliaDvb *dvb )
 {
@@ -225,7 +225,7 @@ static void dvb_set_scan ( HeliaDvb *dvb )
 
 static void helia_dvb_clicked_handler_ctv ( G_GNUC_UNUSED ControlTv *ctv, uint8_t num, HeliaDvb *dvb )
 {
-	fp funcs[] =  { dvb_set_base, dvb_set_playlist, dvb_set_eqa,  dvb_set_eqv,  dvb_set_mute, 
+	fp funcs[] =  { dvb_set_base, dvb_set_playlist, dvb_set_eqa,  dvb_set_eqv,  dvb_set_mute,
 			dvb_set_stop, dvb_set_rec,      dvb_set_scan, dvb_set_info, NULL };
 
 	if ( funcs[num] ) funcs[num] ( dvb );
@@ -402,6 +402,25 @@ static void helia_dvb_handler_power ( G_GNUC_UNUSED Dvb *d, gboolean power, Heli
 	g_signal_emit_by_name ( dvb, "power-set", power );
 }
 
+static void helia_dvb_video_drag_in ( G_GNUC_UNUSED GtkDrawingArea *draw, GdkDragContext *ct, G_GNUC_UNUSED int x, G_GNUC_UNUSED int y,
+	GtkSelectionData *s_data, G_GNUC_UNUSED uint info, guint32 time, HeliaDvb *dvb )
+{
+	char **uris = gtk_selection_data_get_uris ( s_data );
+
+	uint c = 0; for ( c = 0; uris[c] != NULL; c++ )
+	{
+		char *path = helia_uri_get_path ( uris[c] );
+
+		if ( path && g_str_has_suffix ( path, "gtv-channel.conf" ) )
+			g_signal_emit_by_name ( dvb->treeview, "treeview-add-channels", path );
+
+		free ( path );
+	}
+
+	g_strfreev ( uris );
+	gtk_drag_finish ( ct, TRUE, FALSE, time );
+}
+
 static void helia_dvb_init ( HeliaDvb *dvb )
 {
 	GtkBox *box = GTK_BOX ( dvb );
@@ -418,6 +437,10 @@ static void helia_dvb_init ( HeliaDvb *dvb )
 	g_signal_connect ( dvb->video, "realize", G_CALLBACK ( helia_dvb_video_realize ), dvb );
 	g_signal_connect ( dvb->video, "button-press-event",  G_CALLBACK ( helia_dvb_video_press_event  ), dvb );
 	g_signal_connect ( dvb->video, "motion-notify-event", G_CALLBACK ( helia_dvb_video_notify_event ), dvb );
+
+	gtk_drag_dest_set ( GTK_WIDGET ( dvb->video ), GTK_DEST_DEFAULT_ALL, NULL, 0, GDK_ACTION_COPY );
+	gtk_drag_dest_add_uri_targets  ( GTK_WIDGET ( dvb->video ) );
+	g_signal_connect  ( dvb->video, "drag-data-received", G_CALLBACK ( helia_dvb_video_drag_in ), dvb );
 
 	GtkPaned *paned = helia_dvb_create_paned ( dvb->playlist, dvb->video );
 	gtk_widget_set_visible ( GTK_WIDGET ( paned ), TRUE );
