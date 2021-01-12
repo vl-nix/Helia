@@ -1,13 +1,14 @@
 ### [Helia](https://github.com/vl-nix/helia)
 
 * Media Player
-  * Drag and Drop: files, folders, playlists - [M3U](https://en.wikipedia.org/wiki/M3U)
   * Record IPTV ( Original / Encoding )
+  * Drag and Drop: files, folders, playlists - [M3U](https://en.wikipedia.org/wiki/M3U)
+  * Keyboard shortcuts: Ctrl + O, Ctrl + D, Ctrl + Z, space, period
 
 * Digital TV
   * Record ( Original / Encoding )
-  * Scan: DVB, DTMB ( DVB-T/T2, DVB-S/S2, DVB-C )
   * Drag and Drop: gtv-channel.conf
+  * Scan: DVB, DTMB ( DVB-T/T2, DVB-S/S2, DVB-C )
 
 #### Channels ( scan initial file )
 
