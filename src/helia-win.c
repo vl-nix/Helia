@@ -648,6 +648,14 @@ static void _app_add_accelerator ( const char *func_name, uint mod_key, uint gdk
 	gtk_application_set_accels_for_action ( app, text, accel_str );
 }
 
+static void helia_action_decor ( G_GNUC_UNUSED GSimpleAction *sl, G_GNUC_UNUSED GVariant *pm, gpointer data )
+{
+	HeliaWin *win = data;
+
+	gboolean decorated = gtk_window_get_decorated ( GTK_WINDOW ( win ) );
+	gtk_window_set_decorated ( GTK_WINDOW ( win ), !decorated );
+}
+
 typedef struct _FuncAction FuncAction;
 
 struct _FuncAction
@@ -669,7 +677,8 @@ static void helia_app_action ( HeliaApp *_app, HeliaWin *win )
                 { helia_action_files,  "open-files",  GDK_CONTROL_MASK, GDK_KEY_O },
                 { helia_action_pause,  "paused",      0, GDK_KEY_space  },
                 { helia_action_frame,  "frame",       0, GDK_KEY_period },
-                { helia_action_slider, "slider",      GDK_CONTROL_MASK, GDK_KEY_Z }
+                { helia_action_slider, "slider",      GDK_CONTROL_MASK, GDK_KEY_Z },
+                { helia_action_decor,  "decorated",   0, GDK_KEY_F8 }
         };
 
         GActionEntry entries[ G_N_ELEMENTS ( func_action_n ) ];
