@@ -3,7 +3,7 @@
 * Media Player
   * Record IPTV ( Original / Encoding )
   * Drag and Drop: files, folders, playlists - [M3U](https://en.wikipedia.org/wiki/M3U)
-  * Keyboard shortcuts: Ctrl + O, Ctrl + D, Ctrl + Z, space, period, F8
+  * Shortcuts: Ctrl + O, Ctrl + D, Ctrl + Z, space, period, F8
 
 * Digital TV
   * Record ( Original / Encoding )
