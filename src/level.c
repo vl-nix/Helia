@@ -16,6 +16,7 @@ struct _Level
 	GtkBox parent_instance;
 
 	GtkLabel *sgn_snr;
+	GtkLabel *bitrate;
 	GtkProgressBar *bar_sgn;
 	GtkProgressBar *bar_snr;
 
@@ -25,7 +26,7 @@ struct _Level
 
 G_DEFINE_TYPE ( Level, level, GTK_TYPE_BOX )
 
-void level_update ( uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec, Level *level )
+void level_update ( uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec, uint bt_a, uint bt_v, Level *level )
 {
 	gtk_progress_bar_set_fraction ( level->bar_sgn, (double)sgl / 100 );
 	gtk_progress_bar_set_fraction ( level->bar_snr, (double)snr / 100 );
@@ -49,6 +50,10 @@ void level_update ( uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec, Level
 		texta, text_l, textb, rec_cl, ( rec ) ? " ◉ " : "" );
 
 	gtk_label_set_markup ( level->sgn_snr, markup );
+
+	char textbav[256];
+	sprintf ( textbav, "A: %u Kb/s & V: %u Kb/s", bt_a, bt_v );
+	gtk_label_set_text ( level->bitrate, textbav );
 }
 
 static void level_init ( Level *level )
@@ -60,14 +65,17 @@ static void level_init ( Level *level )
 	level->sgn_snr = (GtkLabel *)gtk_label_new ( "Signal  ◉  Snr" );
 	level->bar_sgn = (GtkProgressBar *)gtk_progress_bar_new ();
 	level->bar_snr = (GtkProgressBar *)gtk_progress_bar_new ();
+	level->bitrate = (GtkLabel *)gtk_label_new ( "A: 0 Kbits/s & V: 0 Kbits/s" );
 
 	gtk_widget_set_visible ( GTK_WIDGET ( level->sgn_snr ), TRUE );
 	gtk_widget_set_visible ( GTK_WIDGET ( level->bar_sgn ), TRUE );
 	gtk_widget_set_visible ( GTK_WIDGET ( level->bar_snr ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( level->bitrate ), TRUE );
 
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->sgn_snr ), FALSE, FALSE, 0 );
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->bar_sgn ), FALSE, FALSE, 0 );
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->bar_snr ), FALSE, FALSE, 0 );
+	gtk_box_pack_start ( box, GTK_WIDGET ( level->bitrate ), FALSE, FALSE, 0 );
 }
 
 static void level_finalize ( GObject *object )

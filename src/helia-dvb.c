@@ -140,7 +140,7 @@ static void dvb_set_stop ( HeliaDvb *dvb )
 {
 	g_signal_emit_by_name ( dvb->dvb, "dvb-stop" );
 
-	g_signal_emit_by_name ( dvb->dvb, "dvb-level", 0, 0, FALSE, FALSE );
+	g_signal_emit_by_name ( dvb->dvb, "dvb-level", 0, 0, FALSE, FALSE, 0, 0 );
 
 	gtk_widget_queue_draw ( GTK_WIDGET ( dvb->video ) );
 
@@ -383,11 +383,11 @@ static void helia_dvb_video_hide_cursor ( HeliaDvb *dvb )
 	if ( !gtk_window_is_active ( window ) ) helia_dvb_show_cursor ( dvb->video, TRUE ); else helia_dvb_show_cursor ( dvb->video, show );
 }
 
-static void helia_dvb_handler_level ( G_GNUC_UNUSED Dvb *d, uint sgl, uint snr, gboolean lock, gboolean rec, HeliaDvb *dvb )
+static void helia_dvb_handler_level ( G_GNUC_UNUSED Dvb *d, uint sgl, uint snr, gboolean lock, gboolean rec, uint bitrate_a, uint bitrate_v, HeliaDvb *dvb )
 {
 	helia_dvb_video_hide_cursor ( dvb );
 
-	level_update ( (uint8_t)sgl, (uint8_t)snr, lock, rec, dvb->level );
+	level_update ( (uint8_t)sgl, (uint8_t)snr, lock, rec, bitrate_a, bitrate_v, dvb->level );
 }
 
 static void helia_dvb_handler_message_dialog ( G_GNUC_UNUSED Dvb *d, const char *message, HeliaDvb *dvb )

@@ -45,6 +45,9 @@ struct _Dvb
 	ulong xid;
 	uint16_t sid;
 
+	uint bitrate_a;
+	uint bitrate_v;
+
 	char *data;
 
 	gboolean rec_tv;
@@ -66,6 +69,9 @@ struct _DvbSet
 
 static void dvb_set_stop ( Dvb *dvb )
 {
+	dvb->bitrate_a = 0;
+	dvb->bitrate_v = 0;
+
 	gst_element_set_state ( dvb->playdvb, GST_STATE_NULL );
 }
 
@@ -888,6 +894,43 @@ static void dvb_msg_all ( G_GNUC_UNUSED GstBus *bus, GstMessage *msg, Dvb *dvb )
 
 	if ( structure )
 	{
+		switch ( GST_MESSAGE_TYPE ( msg ) )
+		{
+			case GST_MESSAGE_TAG:
+			{
+				GstTagList *tags = NULL;
+				gst_message_parse_tag ( msg, &tags );
+
+				if ( tags )
+				{
+					uint bitrate_a = 0;
+					char *check_a = NULL;
+
+					if ( gst_tag_list_get_string ( tags, "audio-codec", &check_a ) )
+						{ gst_tag_list_get_uint ( tags, "nominal-bitrate", &bitrate_a ); dvb->bitrate_a = bitrate_a / 1000; }
+
+					free ( check_a );
+				}
+
+				if ( tags )
+				{
+					uint bitrate_v = 0;
+					char *check_v = NULL;
+
+					if ( gst_tag_list_get_string ( tags, "video-codec", &check_v ) )
+						{ gst_tag_list_get_uint ( tags, "bitrate", &bitrate_v ); dvb->bitrate_v = bitrate_v / 1000; }
+
+					free ( check_v );
+				}
+
+				gst_tag_list_unref ( tags );
+				break;
+			}
+
+			default:
+				break;
+		}
+
 		int signal = 0, snr = 0;
 		gboolean lock = FALSE;
 
@@ -899,7 +942,7 @@ static void dvb_msg_all ( G_GNUC_UNUSED GstBus *bus, GstMessage *msg, Dvb *dvb )
 			uint8_t ret_sgl = (uint8_t)(signal*100/0xffff);
 			uint8_t ret_snr = (uint8_t)(snr*100/0xffff);
 
-			g_signal_emit_by_name ( dvb, "dvb-level", ret_sgl, ret_snr, lock, dvb->rec_tv );
+			g_signal_emit_by_name ( dvb, "dvb-level", ret_sgl, ret_snr, lock, dvb->rec_tv, dvb->bitrate_a, dvb->bitrate_v );
 		}
 	}
 }
@@ -1060,6 +1103,9 @@ static void dvb_init ( Dvb *dvb )
 	dvb->data   = NULL;
 	dvb->volume = NULL;
 
+	dvb->bitrate_a = 0;
+	dvb->bitrate_v = 0;
+
 	dvb->playdvb = dvb_create ( dvb );
 
 	g_signal_connect ( dvb, "dvb-rec",     G_CALLBACK ( dvb_handler_rec    ), NULL );
@@ -1167,7 +1213,7 @@ static void dvb_class_init ( DvbClass *class )
 		0, NULL, NULL, NULL, G_TYPE_BOOLEAN, 0 );
 
 	g_signal_new ( "dvb-level", G_TYPE_FROM_CLASS ( class ), G_SIGNAL_RUN_LAST,
-		0, NULL, NULL, NULL, G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN );
+		0, NULL, NULL, NULL, G_TYPE_NONE, 6, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_UINT, G_TYPE_UINT );
 
 	g_signal_new ( "dvb-eqa", G_TYPE_FROM_CLASS ( class ), G_SIGNAL_RUN_LAST,
 		0, NULL, NULL, NULL, G_TYPE_NONE, 2, G_TYPE_OBJECT, G_TYPE_DOUBLE );

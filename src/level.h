@@ -17,4 +17,4 @@ G_DECLARE_FINAL_TYPE ( Level, level, LEVEL, DVB, GtkBox )
 
 Level * level_new ( void );
 
-void level_update ( uint8_t, uint8_t, gboolean, gboolean, Level * );
+void level_update ( uint8_t, uint8_t, gboolean, gboolean, uint, uint, Level * );

@@ -1202,7 +1202,7 @@ static void scan_stop ( G_GNUC_UNUSED GtkButton *button, Scan *scan )
 {
 	if ( GST_ELEMENT_CAST ( scan->dvbscan )->current_state == GST_STATE_NULL ) return;
 
-	level_update ( 0, 0, FALSE, FALSE, scan->level );
+	level_update ( 0, 0, FALSE, FALSE, 0, 0, scan->level );
 
 	scan_read_ch_to_treeview ( scan );
 
@@ -1277,7 +1277,7 @@ static void scan_msg_all ( G_GNUC_UNUSED GstBus *bus, GstMessage *message, Scan 
 			uint8_t ret_sgl = (uint8_t)(signal*100/0xffff);
 			uint8_t ret_snr = (uint8_t)(snr*100/0xffff);
 
-			level_update ( ret_sgl, ret_snr, lock, FALSE, scan->level );
+			level_update ( ret_sgl, ret_snr, lock, FALSE, 0, 0, scan->level );
 		}
 	}
 
