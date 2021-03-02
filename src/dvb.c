@@ -903,22 +903,28 @@ static void dvb_msg_all ( G_GNUC_UNUSED GstBus *bus, GstMessage *msg, Dvb *dvb )
 
 				if ( tags )
 				{
-					uint bitrate_a = 0;
 					char *check_a = NULL;
 
 					if ( gst_tag_list_get_string ( tags, "audio-codec", &check_a ) )
-						{ gst_tag_list_get_uint ( tags, "nominal-bitrate", &bitrate_a ); dvb->bitrate_a = bitrate_a / 1000; }
+					{
+						uint bitrate_a = 0;
+						if ( !gst_tag_list_get_uint ( tags, "nominal-bitrate", &bitrate_a ) )
+							gst_tag_list_get_uint ( tags, "bitrate", &bitrate_a );
+
+						dvb->bitrate_a = bitrate_a / 1000;
+					}
 
 					free ( check_a );
-				}
 
-				if ( tags )
-				{
-					uint bitrate_v = 0;
 					char *check_v = NULL;
 
 					if ( gst_tag_list_get_string ( tags, "video-codec", &check_v ) )
-						{ gst_tag_list_get_uint ( tags, "bitrate", &bitrate_v ); dvb->bitrate_v = bitrate_v / 1000; }
+					{
+						uint bitrate_v = 0;
+						gst_tag_list_get_uint ( tags, "bitrate", &bitrate_v );
+
+						dvb->bitrate_v = bitrate_v / 1000;
+					}
 
 					free ( check_v );
 				}
