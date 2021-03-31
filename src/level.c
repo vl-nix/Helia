@@ -53,7 +53,13 @@ void level_update ( uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec, uint 
 
 	char textbav[256];
 	sprintf ( textbav, "A: %u Kb/s & V: %u Kb/s", bt_a, bt_v );
+
 	gtk_label_set_text ( level->bitrate, textbav );
+
+	if ( bt_a == 0 && bt_v == 0 )
+		gtk_widget_set_visible ( GTK_WIDGET ( level->bitrate ), FALSE );
+	else
+		gtk_widget_set_visible ( GTK_WIDGET ( level->bitrate ), TRUE );
 }
 
 static void level_init ( Level *level )
@@ -70,7 +76,7 @@ static void level_init ( Level *level )
 	gtk_widget_set_visible ( GTK_WIDGET ( level->sgn_snr ), TRUE );
 	gtk_widget_set_visible ( GTK_WIDGET ( level->bar_sgn ), TRUE );
 	gtk_widget_set_visible ( GTK_WIDGET ( level->bar_snr ), TRUE );
-	gtk_widget_set_visible ( GTK_WIDGET ( level->bitrate ), TRUE );
+	gtk_widget_set_visible ( GTK_WIDGET ( level->bitrate ), FALSE );
 
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->sgn_snr ), FALSE, FALSE, 0 );
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->bar_sgn ), FALSE, FALSE, 0 );

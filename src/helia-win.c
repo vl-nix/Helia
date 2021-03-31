@@ -145,7 +145,7 @@ static void helia_about ( GtkWindow *window )
 	gtk_about_dialog_set_program_name   ( dialog, "Helia" );
 	gtk_about_dialog_set_logo_icon_name ( dialog, "helia-logo"  );
 	gtk_about_dialog_set_license_type   ( dialog, GTK_LICENSE_GPL_3_0 );
-	gtk_about_dialog_set_copyright ( dialog, "Copyright 2020 Helia" );
+	gtk_about_dialog_set_copyright ( dialog, "Copyright 2021 Helia" );
 	gtk_about_dialog_set_website   ( dialog, "https://github.com/vl-nix/helia" );
 	gtk_about_dialog_set_comments  ( dialog, "Media Player & IPTV & Digital TV \nDVB-T2/S2/C" );
 
