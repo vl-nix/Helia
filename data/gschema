@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="helia">
+  <schema id="org.gnome.helia" path="/org/gnome/helia/">
+    <key name="dark" type="b">
+      <default>true</default>
+    </key>
+    <key name="icon-size" type="u">
+      <default>18</default>
+    </key>
+    <key name="opacity-panel" type="u">
+      <default>85</default>
+    </key>
+    <key name="opacity-win" type="u">
+      <default>100</default>
+    </key>
+    <key name="width" type="u">
+      <default>900</default>
+    </key>
+    <key name="height" type="u">
+      <default>400</default>
+    </key>
+    <key name="rec-dir" type="s">
+      <default>'none'</default>
+    </key>
+    <key name="theme" type="s">
+      <default>'none'</default>
+    </key>
+    <key name="encoding-iptv" type="b">
+      <default>false</default>
+    </key>
+    <key name="encoding-tv" type="b">
+      <default>false</default>
+    </key>
+    <key name="encoder-audio" type="s">
+      <default>'vorbisenc'</default>
+    </key>
+    <key name="encoder-video" type="s">
+      <default>'theoraenc'</default>
+    </key>
+    <key name="encoder-muxer" type="s">
+      <default>'oggmux'</default>
+    </key>
+  </schema>
+</schemalist>
