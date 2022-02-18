@@ -143,7 +143,7 @@ static void helia_about ( GtkWindow *window )
 	gtk_about_dialog_set_authors ( dialog, authors );
 	gtk_about_dialog_set_artists ( dialog, artists );
 	gtk_about_dialog_set_program_name   ( dialog, "Helia" );
-	gtk_about_dialog_set_logo_icon_name ( dialog, DEF_ICON );
+	gtk_about_dialog_set_logo_icon_name ( dialog, "helia-logo" );
 	gtk_about_dialog_set_license_type   ( dialog, GTK_LICENSE_GPL_3_0 );
 	gtk_about_dialog_set_copyright ( dialog, "Copyright 2022 Helia" );
 	gtk_about_dialog_set_website   ( dialog, "https://github.com/vl-nix/helia" );

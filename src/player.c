@@ -662,7 +662,7 @@ static void player_record ( Player *player )
 		gboolean hls = FALSE;
 		if ( uri && g_strrstr ( uri, ".m3u8" ) ) hls = TRUE;
 
-		double volume = VOLUME;
+		double volume = 0.75;
 		g_object_get ( player->playbin, "volume", &volume, NULL );
 
 		player_set_stop ( player );

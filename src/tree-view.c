@@ -34,8 +34,7 @@ static void tree_view_to_file ( const char *file, gboolean mp_tv, GtkTreeView *t
 	if ( ind == 0 ) return;
 
 	gboolean valid;
-	for ( valid = gtk_tree_model_get_iter_first ( model, &iter ); valid;
-		  valid = gtk_tree_model_iter_next ( model, &iter ) )
+	for ( valid = gtk_tree_model_get_iter_first ( model, &iter ); valid; valid = gtk_tree_model_iter_next ( model, &iter ) )
 	{
 		char *name = NULL;
 		char *data = NULL;
@@ -141,6 +140,9 @@ static gboolean tree_view_media_filter ( const char *file_name, gboolean m3u )
 
 static void tree_view_add_m3u ( const char *file, GtkTreeView *treeview )
 {
+	char *title = NULL;
+	gboolean found = FALSE;
+
 	char  *contents = NULL;
 	GError *err     = NULL;
 
@@ -149,32 +151,26 @@ static void tree_view_add_m3u ( const char *file, GtkTreeView *treeview )
 		char **lines = g_strsplit ( contents, "\n", 0 );
 
 		uint i = 0; for ( i = 0; lines[i] != NULL; i++ )
-		//for ( i = 0; lines[i] != NULL && *lines[i]; i++ )
 		{
-			if ( g_str_has_prefix ( lines[i], "#EXTM3U" ) || g_str_has_prefix ( lines[i], " " ) || strlen ( lines[i] ) < 4 ) continue;
+			if ( g_str_has_prefix ( lines[i], "#EXTM3U" ) || strlen ( lines[i] ) < 4 ) continue;
+			if ( g_str_has_prefix ( lines[i], "#EXTGRP" ) || g_str_has_prefix ( lines[i], "#EXTVLCOPT" ) ) continue;
+
+			if ( found ) { tree_view_append ( title, g_strstrip ( lines[i] ), treeview ); found = FALSE; }
 
 			if ( g_str_has_prefix ( lines[i], "#EXTINF" ) )
 			{
-				char **lines_info = g_strsplit ( lines[i], ",", 0 );
+				char **line = g_strsplit ( lines[i], ",", 0 );
 
-					if ( g_str_has_prefix ( lines[i+1], "#EXTGRP" ) ) i++;
+				if ( title ) free ( title );
+				title = g_strdup ( g_strstrip ( line[1] ) );
 
-					tree_view_append ( g_strstrip ( lines_info[1] ), g_strstrip ( lines[i+1] ), treeview );
+				g_strfreev ( line );
 
-				g_strfreev ( lines_info );
-				i++;
-			}
-			else
-			{
-				if ( g_str_has_prefix ( lines[i], "#" ) || g_str_has_prefix ( lines[i], " " ) || strlen ( lines[i] ) < 4 ) continue;
-
-				char *name = g_path_get_basename ( lines[i] );
-
-				tree_view_append ( g_strstrip ( name ), g_strstrip ( lines[i] ), treeview );
-
-				free ( name );
+				found = TRUE;
 			}
 		}
+
+		if ( title ) free ( title );
 
 		g_strfreev ( lines );
 		free ( contents );
@@ -454,15 +450,15 @@ static void treeview_handler_append ( TreeView *treeview, const char *name, cons
 static char * treeview_handler_next ( TreeView *treeview, const char *uri, uint num )
 {
 	char *path = NULL;
+	g_autofree char *next = ( uri ) ? helia_uri_get_path ( uri ) : NULL;
 
 	GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW ( treeview ) );
 
 	uint count = 0;
 	GtkTreeIter iter;
-	gboolean valid, break_f = FALSE;
+	gboolean valid, found = FALSE, break_f = FALSE;
 
-	for ( valid = gtk_tree_model_get_iter_first ( model, &iter ); valid;
-		valid = gtk_tree_model_iter_next ( model, &iter ) )
+	for ( valid = gtk_tree_model_get_iter_first ( model, &iter ); valid; valid = gtk_tree_model_iter_next ( model, &iter ) )
 	{
 		char *data = NULL;
 		gtk_tree_model_get ( model, &iter, COL_DATA, &data, -1 );
@@ -472,39 +468,24 @@ static char * treeview_handler_next ( TreeView *treeview, const char *uri, uint 
 			if ( count == num )
 			{
 				path = g_strdup ( data );
-				gtk_tree_selection_select_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( treeview ) ), &iter );
 
 				break_f = TRUE;
 			}
 		}
 		else
 		{
-			char *next = helia_uri_get_path ( uri );
+			if ( found ) { path = g_strdup ( data ); break_f = TRUE; }
 
-			if ( g_strrstr ( next, data ) )
-			{
-				if ( gtk_tree_model_iter_next ( model, &iter ) )
-				{
-					char *data2 = NULL;
-					gtk_tree_model_get ( model, &iter, COL_DATA, &data2, -1 );
-
-					path = g_strdup ( data2 );
-
-					gtk_tree_selection_select_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( treeview ) ), &iter );
-					free ( data2 );
-
-				}
-
-				break_f = TRUE;
-			}
-
-			free ( next );
+			if ( next && g_strrstr ( next, data ) ) found = TRUE;
 		}
 
 		count++;
 		free ( data );
+
 		if ( break_f ) break;
 	}
+
+	if ( break_f ) gtk_tree_selection_select_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( treeview ) ), &iter );
 
 	return path;
 }
