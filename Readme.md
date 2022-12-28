@@ -1,14 +1,10 @@
 ### [Helia](https://github.com/vl-nix/helia)
 
-* Media Player
-  * Record IPTV ( Original / Encoding )
-  * Drag and Drop: files, folders, playlists - [M3U](https://en.wikipedia.org/wiki/M3U)
-  * Shortcuts: Ctrl + O, Ctrl + D, Ctrl + Z, space, period, F8
-
 * Digital TV
-  * Record ( Original / Encoding )
+  * Record
+  * Multi-Windows
+  * Scan: DVB, ATSC, DTMB
   * Drag and Drop: gtv-channel.conf
-  * Scan: DVB, DTMB ( DVB-T/T2, DVB-S/S2, DVB-C )
 
 #### Channels ( scan initial file )
 
@@ -17,7 +13,8 @@
 
 #### Dependencies
 
-* gcc, meson
+* gcc
+* meson
 * libgtk 3.0 ( & dev )
 * gstreamer 1.0 ( & dev )
 * all gst-plugins 1.0 ( & dev )
@@ -34,3 +31,14 @@
 4. Install: sudo ninja -C build install
 
 5. Uninstall: sudo ninja -C build uninstall
+
+#### Ver. 22.10
+
+* Add:
+  * Multi-Windows ( max 4 ): open channel ( double-clicked ) -> select channel ( current transponder ) -> add window ( right-click )
+
+* Delete:
+  * Media Player
+  * Encoding
+  * Equalizers
+

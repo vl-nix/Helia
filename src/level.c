@@ -1,5 +1,5 @@
 /*
-* Copyright 2020 Stepan Perun
+* Copyright 2022 Stepan Perun
 * This program is free software.
 *
 * License: Gnu General Public License GPL-3
@@ -16,7 +16,6 @@ struct _Level
 	GtkBox parent_instance;
 
 	GtkLabel *sgn_snr;
-	GtkLabel *bitrate;
 	GtkProgressBar *bar_sgn;
 	GtkProgressBar *bar_snr;
 
@@ -26,7 +25,7 @@ struct _Level
 
 G_DEFINE_TYPE ( Level, level, GTK_TYPE_BOX )
 
-void level_update ( uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec, uint bt_a, uint bt_v, Level *level )
+static void level_handler_update ( Level *level, uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec )
 {
 	gtk_progress_bar_set_fraction ( level->bar_sgn, (double)sgl / 100 );
 	gtk_progress_bar_set_fraction ( level->bar_snr, (double)snr / 100 );
@@ -41,29 +40,21 @@ void level_update ( uint8_t sgl, uint8_t snr, gboolean lock, gboolean rec, uint 
 
 	const char *rec_cl = ( level->pulse ) ? "ff0000" :"2b2222";
 
-	time_t t_cur;
-	time ( &t_cur );
-
-	if ( ( t_cur > level->t_start ) ) { time ( &level->t_start ); level->pulse = !level->pulse; }
-
 	g_autofree char *markup = g_markup_printf_escaped ( "%s<span foreground=\"#%s\">  ◉  </span>%s  <span foreground=\"#%s\">  %s</span>", 
 		texta, text_l, textb, rec_cl, ( rec ) ? " ◉ " : "" );
 
 	gtk_label_set_markup ( level->sgn_snr, markup );
 
-	char textbav[256];
-	sprintf ( textbav, "A: %u Kb/s & V: %u Kb/s", bt_a, bt_v );
+	time_t t_cur;
+	time ( &t_cur );
 
-	gtk_label_set_text ( level->bitrate, textbav );
-
-	if ( bt_a == 0 && bt_v == 0 )
-		gtk_widget_set_visible ( GTK_WIDGET ( level->bitrate ), FALSE );
-	else
-		gtk_widget_set_visible ( GTK_WIDGET ( level->bitrate ), TRUE );
+	if ( ( t_cur > level->t_start ) ) { time ( &level->t_start ); level->pulse = !level->pulse; }
 }
 
 static void level_init ( Level *level )
 {
+	level->pulse = FALSE;
+
 	GtkBox *box = GTK_BOX ( level );
 	gtk_orientable_set_orientation ( GTK_ORIENTABLE ( box ), GTK_ORIENTATION_VERTICAL );
 	gtk_box_set_spacing ( box, 3 );
@@ -71,17 +62,16 @@ static void level_init ( Level *level )
 	level->sgn_snr = (GtkLabel *)gtk_label_new ( "Signal  ◉  Snr" );
 	level->bar_sgn = (GtkProgressBar *)gtk_progress_bar_new ();
 	level->bar_snr = (GtkProgressBar *)gtk_progress_bar_new ();
-	level->bitrate = (GtkLabel *)gtk_label_new ( "A: 0 Kbits/s & V: 0 Kbits/s" );
 
 	gtk_widget_set_visible ( GTK_WIDGET ( level->sgn_snr ), TRUE );
 	gtk_widget_set_visible ( GTK_WIDGET ( level->bar_sgn ), TRUE );
 	gtk_widget_set_visible ( GTK_WIDGET ( level->bar_snr ), TRUE );
-	gtk_widget_set_visible ( GTK_WIDGET ( level->bitrate ), FALSE );
 
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->sgn_snr ), FALSE, FALSE, 0 );
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->bar_sgn ), FALSE, FALSE, 0 );
 	gtk_box_pack_start ( box, GTK_WIDGET ( level->bar_snr ), FALSE, FALSE, 0 );
-	gtk_box_pack_start ( box, GTK_WIDGET ( level->bitrate ), FALSE, FALSE, 0 );
+
+	g_signal_connect ( level, "level-update", G_CALLBACK ( level_handler_update ), NULL );
 }
 
 static void level_finalize ( GObject *object )
@@ -92,6 +82,8 @@ static void level_finalize ( GObject *object )
 static void level_class_init ( LevelClass *class )
 {
 	G_OBJECT_CLASS (class)->finalize = level_finalize;
+
+	g_signal_new ( "level-update", G_TYPE_FROM_CLASS ( class ), G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL, G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN );
 }
 
 Level * level_new ( void )

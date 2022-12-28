@@ -9,10 +9,12 @@
 
 #pragma once
 
-#include <gtk/gtk.h>
+#include "include.h"
 
-#define HELIA_TYPE_APP helia_app_get_type ()
+typedef unsigned int uint;
 
-G_DECLARE_FINAL_TYPE ( HeliaApp, helia_app, HELIA, APP, GtkApplication )
+#define CONVERT_TYPE_OBJECT convert_get_type ()
 
-HeliaApp * helia_app_new ( void );
+G_DECLARE_FINAL_TYPE ( Convert, convert, CONVERT, OBJECT, GObject )
+
+Convert * convert_new ( void );

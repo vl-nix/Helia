@@ -1,40 +1,22 @@
 <gresources>
   <gresource prefix="/helia">
-    <file preprocess="to-pixdata">helia-audio.png</file>
-    <file preprocess="to-pixdata">helia-base.png</file>
     <file preprocess="to-pixdata">helia-clear.png</file>
+    <file preprocess="to-pixdata">helia-close.png</file>
     <file preprocess="to-pixdata">helia-convert.png</file>
     <file preprocess="to-pixdata">helia-dark.png</file>
     <file preprocess="to-pixdata">helia-display.png</file>
     <file preprocess="to-pixdata">helia-down.png</file>
-    <file preprocess="to-pixdata">helia-editor.png</file>
-    <file preprocess="to-pixdata">helia-eqa.png</file>
-    <file preprocess="to-pixdata">helia-eqv.png</file>
-    <file preprocess="to-pixdata">helia-exit.png</file>
     <file preprocess="to-pixdata">helia-info.png</file>
     <file preprocess="to-pixdata">helia-logo.png</file>
-    <file preprocess="to-pixdata">helia-mp.png</file>
-    <file preprocess="to-pixdata">helia-muted.png</file>
-    <file preprocess="to-pixdata">helia-ok.png</file>
-    <file preprocess="to-pixdata">helia-panel.png</file>
-    <file preprocess="to-pixdata">helia-pause.png</file>
     <file preprocess="to-pixdata">helia-play.png</file>
     <file preprocess="to-pixdata">helia-pref.png</file>
     <file preprocess="to-pixdata">helia-quit.png</file>
     <file preprocess="to-pixdata">helia-record.png</file>
     <file preprocess="to-pixdata">helia-remove.png</file>
-    <file preprocess="to-pixdata">helia-repeat.png</file>
     <file preprocess="to-pixdata">helia-save.png</file>
-    <file preprocess="to-pixdata">helia-set.png</file>
-    <file preprocess="to-pixdata">helia-step.png</file>
     <file preprocess="to-pixdata">helia-stop.png</file>
-    <file preprocess="to-pixdata">helia-subtitles.png</file>
-    <file preprocess="to-pixdata">helia-tv.png</file>
     <file preprocess="to-pixdata">helia-theme.png</file>
-    <file preprocess="to-pixdata">helia-unset.png</file>
     <file preprocess="to-pixdata">helia-up.png</file>
-    <file preprocess="to-pixdata">helia-video.png</file>
-    <file preprocess="to-pixdata">helia-warning.png</file>
     <file preprocess="to-pixdata">helia-window.png</file>
   </gresource>
 </gresources>

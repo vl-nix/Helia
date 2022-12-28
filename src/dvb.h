@@ -1,5 +1,5 @@
 /*
-* Copyright 2020 Stepan Perun
+* Copyright 2022 Stepan Perun
 * This program is free software.
 *
 * License: Gnu General Public License GPL-3
@@ -9,12 +9,13 @@
 
 #pragma once
 
-#include <gtk/gtk.h>
-#include <gst/gst.h>
+#include "level.h"
 
-#define DVB_TYPE_OBJECT                   dvb_get_type ()
+typedef unsigned int uint;
+typedef unsigned long ulong;
 
-G_DECLARE_FINAL_TYPE ( Dvb, dvb, DVB, OBJECT, GstObject )
+#define DVB_TYPE_DRAW dvb_get_type ()
 
-Dvb * dvb_new ( void );
+G_DECLARE_FINAL_TYPE ( Dvb, dvb, DVB, DRAW, GtkDrawingArea )
 
+Dvb * dvb_new ( uint8_t, Level * );

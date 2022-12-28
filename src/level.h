@@ -1,5 +1,5 @@
 /*
-* Copyright 2020 Stepan Perun
+* Copyright 2022 Stepan Perun
 * This program is free software.
 *
 * License: Gnu General Public License GPL-3
@@ -16,5 +16,3 @@
 G_DECLARE_FINAL_TYPE ( Level, level, LEVEL, DVB, GtkBox )
 
 Level * level_new ( void );
-
-void level_update ( uint8_t, uint8_t, gboolean, gboolean, uint, uint, Level * );

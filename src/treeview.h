@@ -7,15 +7,14 @@
 * http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-#include "helia-app.h"
+#pragma once
 
-int main ( void )
-{
-	HeliaApp *app = helia_app_new ();
+#include "level.h"
 
-	int status = g_application_run ( G_APPLICATION ( app ), 0, NULL );
+typedef unsigned int uint;
 
-	g_object_unref ( app );
+#define TREEDVB_TYPE_BOX treedvb_get_type ()
 
-	return status;
-}
+G_DECLARE_FINAL_TYPE ( TreeDvb, treedvb, TREEDVB, BOX, GtkBox )
+
+TreeDvb * treedvb_new ( Level * );

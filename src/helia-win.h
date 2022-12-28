@@ -1,5 +1,5 @@
 /*
-* Copyright 2020 Stepan Perun
+* Copyright 2022 Stepan Perun
 * This program is free software.
 *
 * License: Gnu General Public License GPL-3
@@ -15,5 +15,4 @@
 
 G_DECLARE_FINAL_TYPE ( HeliaWin, helia_win, HELIA, WIN, GtkWindow )
 
-HeliaWin * helia_win_new ( GFile **, int, HeliaApp * );
-
+HeliaWin * helia_win_new ( HeliaApp * );

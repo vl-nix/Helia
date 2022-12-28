@@ -11,8 +11,29 @@
 
 #include <gtk/gtk.h>
 
-#define HELIA_TYPE_APP helia_app_get_type ()
+enum ScanPage
+{
+	PAGE_SC,
+	PAGE_DT,
+	PAGE_DS,
+	PAGE_DC,
+	PAGE_AT,
+	PAGE_DM,
+	PAGE_CH,
+	PAGE_NUM
+};
 
-G_DECLARE_FINAL_TYPE ( HeliaApp, helia_app, HELIA, APP, GtkApplication )
-
-HeliaApp * helia_app_new ( void );
+enum Lnbs
+{
+	LNB_UNV,
+	LNB_DBS,
+	LNB_EXT,
+	LNB_STD,
+	LNB_EHD,
+	LNB_CBD,
+	LNB_CMT,
+	LNB_BJ1,
+	LNB_QPH,
+	LNB_BRO,
+	LNB_MNL
+};

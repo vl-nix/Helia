@@ -11,8 +11,10 @@
 
 #include <gtk/gtk.h>
 
-#define HELIA_TYPE_APP helia_app_get_type ()
+typedef unsigned int uint;
 
-G_DECLARE_FINAL_TYPE ( HeliaApp, helia_app, HELIA, APP, GtkApplication )
+#define INFODVB_TYPE_WIN info_dvb_win_get_type ()
 
-HeliaApp * helia_app_new ( void );
+G_DECLARE_FINAL_TYPE ( InfoDvbWin, info_dvb_win, INFODVB, WIN, GtkWindow )
+
+InfoDvbWin * info_dvb_win_new ( uint, const char *, GObject *, GtkWindow * );

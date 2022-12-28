@@ -1,5 +1,5 @@
 /*
-* Copyright 2020 Stepan Perun
+* Copyright 2022 Stepan Perun
 * This program is free software.
 *
 * License: Gnu General Public License GPL-3
@@ -10,6 +10,11 @@
 #pragma once
 
 #include <gtk/gtk.h>
-#include <gst/gst.h>
 
-void helia_eqv_win ( double , GtkWindow *, GstElement * );
+typedef unsigned int uint;
+
+#define PREF_TYPE_POPOVER pref_get_type ()
+
+G_DECLARE_FINAL_TYPE ( Pref, pref, PREF, POPOVER, GtkPopover )
+
+Pref * pref_new ( void );

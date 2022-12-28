@@ -1,5 +1,5 @@
 /*
-* Copyright 2020 Stepan Perun
+* Copyright 2022 Stepan Perun
 * This program is free software.
 *
 * License: Gnu General Public License GPL-3
@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <gtk/gtk.h>
-#include <gst/gst.h>
+#include <stdint.h>
+#include <string.h>
 
-void helia_eqa_win ( double , GtkWindow *, GstElement * );
+char * dvb_get_name ( int, int );
